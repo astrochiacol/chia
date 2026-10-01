@@ -1,0 +1,3 @@
+# Carpeta para fotos de perfil de científicas de AstroCHIA
+# Puedes guardar aquí las imágenes (ej: camila.jpg, diana.png)
+# Y en cientificas.json colocar la ruta: "foto": "images/cientificas/camila.jpg"
