@@ -307,17 +307,58 @@ function initForms() {
     });
   }
 
-  // Formulario Rápido de Contacto
+  // Formulario Rápido de Contacto — Envío a astrochiacol@gmail.com
   const contactForm = document.getElementById('contact-quick-form');
   const contactFeedback = document.getElementById('contact-quick-feedback');
+  const contactSubmitBtn = document.getElementById('contact-submit-btn');
 
   if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      contactFeedback.className = 'form-feedback success';
-      contactFeedback.innerHTML = '✨ <strong>¡Mensaje recibido!</strong> Nos pondremos en contacto pronto.';
-      contactFeedback.style.display = 'block';
-      contactForm.reset();
+      
+      const name = document.getElementById('contact-name').value;
+      const email = document.getElementById('contact-email').value;
+      const message = document.getElementById('contact-msg').value;
+
+      if (contactSubmitBtn) {
+        contactSubmitBtn.disabled = true;
+        contactSubmitBtn.innerText = 'Enviando mensaje...';
+      }
+
+      try {
+        const response = await fetch('https://formsubmit.co/ajax/astrochiacol@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `Nuevo mensaje de contacto de ${name} — AstroCHIA`,
+            Nombre: name,
+            Correo: email,
+            Mensaje: message
+          })
+        });
+
+        if (response.ok) {
+          contactFeedback.className = 'form-feedback success';
+          contactFeedback.innerHTML = '✨ <strong>¡Mensaje enviado con éxito!</strong> Tu mensaje ha sido recibido por el equipo de AstroCHIA. Te responderemos pronto.';
+          contactFeedback.style.display = 'block';
+          contactForm.reset();
+        } else {
+          throw new Error('Error al enviar');
+        }
+      } catch (err) {
+        contactFeedback.className = 'form-feedback';
+        contactFeedback.style.color = '#ffd166';
+        contactFeedback.innerHTML = `⚠️ No pudimos enviar el formulario automáticamente. Puedes escribirnos directamente a <a href="mailto:astrochiacol@gmail.com?subject=Contacto AstroCHIA&body=${encodeURIComponent(message)}" style="color: var(--gold-lunar); text-decoration: underline;">astrochiacol@gmail.com</a>.`;
+        contactFeedback.style.display = 'block';
+      } finally {
+        if (contactSubmitBtn) {
+          contactSubmitBtn.disabled = false;
+          contactSubmitBtn.innerText = 'Enviar Mensaje';
+        }
+      }
     });
   }
 }

@@ -643,20 +643,23 @@
 
         <div class="contact-box glass-panel">
           <h3>Envíanos un Mensaje</h3>
-          <form id="contact-quick-form">
+          <form id="contact-quick-form" action="https://formsubmit.co/astrochiacol@gmail.com" method="POST">
+            <input type="hidden" name="_subject" value="Nuevo mensaje desde la web — AstroCHIA">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
             <div class="form-group">
               <label for="contact-name">Tu Nombre o Entidad</label>
-              <input type="text" id="contact-name" placeholder="Nombre / Medio / Institución" required>
+              <input type="text" id="contact-name" name="nombre" placeholder="Nombre / Medio / Institución" required>
             </div>
             <div class="form-group">
               <label for="contact-email">Correo de Contacto</label>
-              <input type="email" id="contact-email" placeholder="tu@correo.com" required>
+              <input type="email" id="contact-email" name="email" placeholder="tu@correo.com" required>
             </div>
             <div class="form-group">
               <label for="contact-msg">Mensaje</label>
-              <textarea id="contact-msg" rows="3" placeholder="Motivo de contacto (charla, entrevista, alianza...)" required></textarea>
+              <textarea id="contact-msg" name="mensaje" rows="3" placeholder="Motivo de contacto (charla, entrevista, alianza...)" required></textarea>
             </div>
-            <button type="submit" class="btn btn-outline btn-block">Enviar Mensaje</button>
+            <button type="submit" class="btn btn-outline btn-block" id="contact-submit-btn">Enviar Mensaje</button>
             <div id="contact-quick-feedback" class="form-feedback" style="display: none;"></div>
           </form>
         </div>
