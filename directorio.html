@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directorio de Científicas | AstroCHIA</title>
+  <meta name="description" content="Directorio oficial de científicas e investigadoras colombianas en astronomía, astrofísica y ciencias espaciales.">
+  <meta name="keywords" content="Directorio AstroCHIA, científicas colombianas, investigadoras astronomía, astrofísicas Colombia">
+  <meta name="author" content="AstroCHIA">
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Directorio de Científicas | AstroCHIA">
+  <meta property="og:description" content="Conoce y conecta con investigadoras colombianas en ciencias espaciales en todo el mundo.">
+  <meta property="og:image" content="https://raw.githubusercontent.com/astrochiacol/astrochias/main/images/logoCHIA_.png">
+
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-directory">
+
+  <!-- Canvas de fondo para cielo estrellado -->
+  <canvas id="starfield-canvas"></canvas>
+
+  <!-- Barra de Navegación -->
+  <header class="site-header" id="main-header">
+    <nav class="navbar container" aria-label="Navegación principal">
+      <a href="index.html" class="brand-logo" id="nav-brand-logo">
+        <img src="https://raw.githubusercontent.com/astrochiacol/astrochias/main/images/logoCHIA_.png" alt="Logo AstroCHIA" class="official-logo-img">
+        <div class="brand-text">
+          <span class="brand-name">Astro<span class="gradient-text">CHIA</span></span>
+          <span class="brand-sub">Colombianas Haciendo Investigación en Astrociencias</span>
+        </div>
+      </a>
+
+      <button class="nav-toggle" id="nav-toggle-btn" aria-label="Abrir menú" aria-expanded="false">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+
+      <div class="nav-menu" id="nav-menu-wrapper">
+        <ul class="nav-links">
+          <li><a href="index.html#inicio" class="nav-link">Inicio</a></li>
+          <li><a href="index.html#sobre-nosotras" class="nav-link">Sobre CHIA</a></li>
+          <li><a href="index.html#junta-directiva" class="nav-link">Junta Directiva</a></li>
+          <li><a href="directorio.html" class="nav-link active">Directorio</a></li>
+          <li><a href="index.html#areas" class="nav-link">Investigación</a></li>
+          <li><a href="index.html#contacto" class="nav-link">Contacto</a></li>
+        </ul>
+        <a href="#registro-directorio" class="btn btn-primary nav-cta">
+          <span>+ Registrarme</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    
+    <!-- Header del Directorio -->
+    <section class="directory-hero section">
+      <div class="container text-center">
+        <div class="hero-badge">
+          <span class="pulse-orbit"></span>
+          <span>✦ Red Global de Investigadoras</span>
+        </div>
+
+        <h1 class="section-title">
+          Directorio de <span class="gradient-title">Científicas Colombianas</span>
+        </h1>
+
+        <p class="section-subtitle">
+          Explora perfiles de investigadoras, docentes, posdocs y estudiantes en astronomía, astrofísica y ciencias espaciales alrededor del mundo.
+        </p>
+
+        <div class="directory-hero-actions">
+          <a href="#registro-directorio" class="btn btn-primary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+            <span>Registrar mi Perfil</span>
+          </a>
+          <button id="btn-export-excel" class="btn btn-secondary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span>Descargar Lista en Excel (.csv)</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controles de Búsqueda y Filtros -->
+    <section class="directory-body-section">
+      <div class="container">
+        
+        <div class="directory-controls-box glass-panel">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="dir-search-input" placeholder="Buscar por nombre, institución o campo (ej. Exoplanetas, UdeA, Cosmología)..." aria-label="Buscar en el directorio">
+            <button id="dir-clear-btn" class="clear-btn" aria-label="Limpiar búsqueda" style="display: none;">&times;</button>
+          </div>
+
+          <div class="directory-meta-bar">
+            <div class="filter-pills" id="dir-filter-pills">
+              <button class="filter-pill active" data-filter="all">Todas</button>
+              <button class="filter-pill" data-filter="exoplanetas">Exoplanetas</button>
+              <button class="filter-pill" data-filter="estelar">Astrofísica Estelar</button>
+              <button class="filter-pill" data-filter="cosmología">Cosmología</button>
+              <button class="filter-pill" data-filter="galáctica">Galáctica</button>
+              <button class="filter-pill" data-filter="datos">Datos & IA</button>
+            </div>
+            <div class="results-counter" id="results-count-text">
+              Cargando investigadoras...
+            </div>
+          </div>
+        </div>
+
+        <!-- Grid de Tarjetas Sencillas de Científicas -->
+        <div class="directory-cards-grid" id="directory-cards-container">
+          <!-- Renderizado dinámicamente con JavaScript -->
+        </div>
+
+        <!-- Estado vacío si no hay resultados -->
+        <div id="no-results-msg" class="glass-panel no-results-box" style="display: none;">
+          <div class="no-results-icon">🔭</div>
+          <h3>No encontramos investigadoras con ese criterio</h3>
+          <p>Intenta con otro término de búsqueda o limpia los filtros.</p>
+          <button id="btn-reset-filters" class="btn btn-outline btn-sm">Restablecer filtros</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Formulario de Registro para Científicas -->
+    <section class="section register-section" id="registro-directorio">
+      <div class="container">
+        <div class="join-card glass-panel" style="max-width: 860px; margin: 0 auto;">
+          <div class="join-header text-center">
+            <span class="section-tag">Forma Parte de AstroCHIA</span>
+            <h2 class="section-title">Formulario de <span class="gradient-text">Registro en el Directorio</span></h2>
+            <p class="section-subtitle">
+              Si eres una científica, investigadora o estudiante colombiana en astronomía o ramas afines, ingresa tus datos. Tu tarjeta aparecerá en el directorio y se guardará en la base de datos oficial.
+            </p>
+          </div>
+
+          <form id="scientist-register-form" class="join-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-nombre">Nombre Completo *</label>
+                <input type="text" id="form-nombre" required placeholder="Ej. Dra. Camila Valenzuela">
+              </div>
+              <div class="form-group">
+                <label for="form-titulo">Título Académico *</label>
+                <input type="text" id="form-titulo" required placeholder="Ej. PhD en Astrofísica / MSc en Física / Estudiante de Pregrado">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-profesion">Profesión / Cargo Actual *</label>
+                <input type="text" id="form-profesion" required placeholder="Ej. Investigadora Postdoctoral / Profesora Asistente">
+              </div>
+              <div class="form-group">
+                <label for="form-institucion">Institución o Universidad de Afiliación *</label>
+                <input type="text" id="form-institucion" required placeholder="Ej. Universidad de Antioquia / Observatorio de Ginebra">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="form-areas">Áreas en las que Investigas * (separadas por comas)</label>
+              <input type="text" id="form-areas" required placeholder="Ej. Exoplanetas, Espectroscopía, Atmósferas, Astrobiología">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-correo">Correo Electrónico (Opcional)</label>
+                <input type="email" id="form-correo" placeholder="correo@institucion.edu (para contacto)">
+              </div>
+              <div class="form-group">
+                <label for="form-redes">Enlace a Red Social o Perfil Académico (Opcional)</label>
+                <input type="url" id="form-redes" placeholder="https://linkedin.com/in/... o ORCID / Twitter">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="form-foto-file">Foto de Perfil (Opcional)</label>
+              <div class="photo-upload-wrapper">
+                <input type="file" id="form-foto-file" accept="image/*">
+                <small class="upload-hint">Si no subes foto, se generará automáticamente un avatar estelar con tus iniciales.</small>
+              </div>
+              <div id="photo-preview-container" style="display: none; margin-top: 12px; align-items: center; gap: 14px;">
+                <img id="photo-preview-img" src="" alt="Vista previa" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-lunar);">
+                <span style="font-size: 0.85rem; color: var(--gold-lunar-light);">✓ Foto cargada correctamente</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="btn-submit-register">
+              <span>Guardar y Agregar al Directorio</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+
+            <div id="register-feedback" class="form-feedback" style="display: none;"></div>
+          </form>
+
+          <!-- Nota de Integración con GitHub y Excel -->
+          <div class="excel-sync-info" style="margin-top: 30px; padding: 20px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px dashed var(--border-glass); font-size: 0.88rem; color: var(--text-secondary);">
+            <strong style="color: var(--gold-lunar);">📊 Almacenamiento en Excel / GitHub:</strong>
+            <p style="margin: 6px 0 0 0;">Cada registro se añade instantáneamente a este directorio y puedes descargarlo en cualquier momento con el botón <strong>"Descargar Lista en Excel (.csv)"</strong> para actualizar el archivo <code>cientificas.json</code> en el repositorio de GitHub. También se puede conectar a Google Sheets para sincronización automática en la nube.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="brand-logo">
+          <span class="brand-name">Astro<span class="gradient-text">CHIA</span></span>
+        </div>
+        <p class="footer-desc">
+          Colombianas Haciendo Investigación en Astrociencias. Visibilizando el talento femenino en la investigación científica del espacio.
+        </p>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="index.html#inicio">Inicio</a></li>
+          <li><a href="index.html#sobre-nosotras">Sobre CHIA</a></li>
+          <li><a href="index.html#junta-directiva">Junta Directiva</a></li>
+          <li><a href="directorio.html">Directorio de Científicas</a></li>
+          <li><a href="index.html#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-links-col">
+        <h4>Comunidad</h4>
+        <ul>
+          <li><a href="#registro-directorio">Registrar Perfil</a></li>
+          <li><a href="https://twitter.com/AstroChia" target="_blank" rel="noopener">Twitter / X (@AstroChia)</a></li>
+          <li><a href="https://github.com/astrochiacol/chia" target="_blank" rel="noopener">Repositorio en GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom container">
+      <p>&copy; <span id="current-year">2026</span> AstroCHIA — Todos los derechos reservados.</p>
+      <p class="hosting-note">Alojado en <strong>GitHub Pages</strong> 🚀</p>
+    </div>
+  </footer>
+
+  <script src="directorio.js"></script>
+</body>
+</html>

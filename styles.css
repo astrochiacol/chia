@@ -192,11 +192,11 @@ body {
 }
 
 .brand-sub {
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+  font-size: 0.72rem;
+  letter-spacing: 0.2px;
   color: var(--text-secondary);
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .nav-menu {
@@ -1386,3 +1386,178 @@ body {
     height: 140px;
   }
 }
+
+/* ==========================================================================
+   Página Adicional: Directorio de Científicas
+   ========================================================================== */
+.directory-hero {
+  padding-top: 150px;
+  padding-bottom: 40px;
+}
+
+.directory-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.directory-controls-box {
+  padding: 24px;
+  margin-bottom: 36px;
+}
+
+.directory-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.results-counter {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.directory-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+  margin-bottom: 60px;
+}
+
+.scientist-card-simple {
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-smooth);
+}
+
+.scientist-card-simple:hover {
+  transform: translateY(-4px);
+}
+
+.card-simple-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card-avatar-initials {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo-deep), var(--purple-nebula));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  border: 2px solid var(--border-glow);
+  box-shadow: 0 4px 16px rgba(138, 43, 226, 0.3);
+  flex-shrink: 0;
+}
+
+.card-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.scientist-card-name {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+
+.scientist-card-degree {
+  font-size: 0.82rem;
+  color: var(--gold-lunar);
+  font-weight: 600;
+}
+
+.scientist-card-role {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.card-institution-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--cyan-cosmic);
+  margin-bottom: 14px;
+  padding: 6px 12px;
+  background: rgba(56, 189, 248, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+.card-simple-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-glass);
+}
+
+.contact-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-glass);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: var(--transition-smooth);
+}
+
+.contact-pill-btn:hover {
+  background: rgba(255, 209, 102, 0.15);
+  border-color: var(--gold-lunar);
+  color: #fff;
+}
+
+.no-results-box {
+  text-align: center;
+  padding: 60px 30px;
+  margin-bottom: 60px;
+}
+
+.no-results-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.photo-upload-wrapper input[type="file"] {
+  background: rgba(11, 13, 30, 0.7);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px dashed var(--border-glass);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.upload-hint {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+

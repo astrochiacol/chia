@@ -10,7 +10,13 @@ Sitio web oficial, moderno, interactivo y optimizado para ser publicado **100% g
 ## ✨ Características del Sitio
 
 - **Diseño Cósmico Moderno**: Fondo interactivo con estrellas en movimiento y estrellas fugaces en HTML5 Canvas.
-- **Directorio Interactivo de Científicas**: Búsqueda en tiempo real y filtros por áreas de investigación (Exoplanetas, Astrofísica Estelar, Cosmología, IA en Astronomía, etc.).
+- **Junta Directiva Oficial**: Presentación de las investigadoras líderes con fotos oficiales, perfiles y enlaces académicos.
+- **Página de Directorio de Científicas (`directorio.html`)**:
+  - Búsqueda en tiempo real por **Nombre, Institución o Campo de Investigación**.
+  - Tarjetas sencillas con título, profesión, institución, áreas y redes/contacto.
+  - Foto opcional (si no se sube, se genera un avatar con iniciales automáticamente).
+  - Formulario integrado para que las científicas agreguen su información.
+  - **Exportación a Excel / CSV** en un clic con codificación UTF-8 para administrar la base de datos en GitHub.
 - **Métricas de Impacto**: Contadores animados (+85 científicas, +15 países, creada en 2018).
 - **Formularios Integrados**:
   - Registro para investigadoras y estudiantes de pregrado/posgrado.
