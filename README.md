@@ -76,3 +76,13 @@ Si tienes o adquieres el dominio (como `astrochias.com` o `astrochia.org`):
 
 Para ver y probar la página inmediatamente en tu computador:
 - Solo haz doble clic en el archivo `index.html` para abrirlo en tu navegador favorito (Chrome, Safari, Firefox).
+
+---
+
+## 📬 Contacto & Redes Oficiales
+
+- **Correo Electrónico**: [astrochiacol@gmail.com](mailto:astrochiacol@gmail.com)
+- **Instagram Oficial**: [@astrochia](https://www.instagram.com/astrochia)
+- **Twitter / X**: [@AstroChia](https://twitter.com/AstroChia)
+- **Repositorio**: [https://github.com/astrochiacol/chia](https://github.com/astrochiacol/chia)
+
