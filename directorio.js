@@ -11,7 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Clave de almacenamiento local para persistencia en navegador
-const STORAGE_KEY = 'astrochia_cientificas_data';
+const STORAGE_KEY = 'astrochia_directorio_v2';
+// Limpiar caché vieja de prueba si existiera
+try { localStorage.removeItem('astrochia_cientificas_data'); } catch(e) {}
 
 let allScientists = [];
 let currentCategory = 'all';
@@ -29,25 +31,27 @@ async function initDirectory() {
   const exportBtn = document.getElementById('btn-export-excel');
   const resetBtn = document.getElementById('btn-reset-filters');
 
-  // Cargar datos (primero de LocalStorage si existen registros nuevos, o de cientificas.json)
+  // 1. Cargar archivo base cientificas.json
+  try {
+    const response = await fetch('cientificas.json');
+    if (response.ok) {
+      allScientists = await response.json();
+    }
+  } catch (err) {
+    console.warn('Iniciando directorio localmente');
+    allScientists = [];
+  }
+
+  // 2. Si se han registrado nuevas investigadoras desde este navegador, cargarlas
   const savedData = localStorage.getItem(STORAGE_KEY);
   if (savedData) {
     try {
-      allScientists = JSON.parse(savedData);
-    } catch (e) {
-      console.warn('Error leyendo localStorage, recargando JSON');
-    }
-  }
-
-  if (!allScientists || allScientists.length === 0) {
-    try {
-      const response = await fetch('cientificas.json');
-      if (response.ok) {
-        allScientists = await response.json();
+      const localList = JSON.parse(savedData);
+      if (Array.isArray(localList)) {
+        allScientists = localList;
       }
-    } catch (err) {
-      console.warn('Cargando datos locales de respaldo');
-      allScientists = getDefaultScientists();
+    } catch (e) {
+      console.warn('Error leyendo localStorage');
     }
   }
 
@@ -133,9 +137,35 @@ function renderCards() {
 
   // Contador
   if (countText) {
-    countText.innerText = `${filtered.length} investigadora${filtered.length === 1 ? '' : 's'} encontrada${filtered.length === 1 ? '' : 's'}`;
+    if (allScientists.length === 0) {
+      countText.innerText = '0 investigadoras registradas';
+    } else {
+      countText.innerText = `${filtered.length} investigadora${filtered.length === 1 ? '' : 's'} encontrada${filtered.length === 1 ? '' : 's'}`;
+    }
   }
 
+  // Estado si el directorio está completamente en blanco
+  if (allScientists.length === 0) {
+    container.innerHTML = `
+      <div class="glass-panel no-results-box" style="grid-column: 1 / -1; padding: 60px 24px; text-align: center;">
+        <div class="no-results-icon" style="font-size: 3rem; margin-bottom: 14px;">✨🔭</div>
+        <h3 style="font-family: var(--font-heading); color: var(--gold-lunar); font-size: 1.4rem; margin-bottom: 10px;">
+          Directorio listo para inaugurarse
+        </h3>
+        <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 24px; font-size: 0.95rem; line-height: 1.6;">
+          Aún no hay científicas registradas en la base de datos. Puedes empezar a cargar los perfiles oficiales usando el formulario de abajo.
+        </p>
+        <a href="#registro-directorio" class="btn btn-primary">
+          <span>+ Cargar Primera Investigadora</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        </a>
+      </div>
+    `;
+    if (noResultsMsg) noResultsMsg.style.display = 'none';
+    return;
+  }
+
+  // Estado si una búsqueda no arroja coincidencias
   if (filtered.length === 0) {
     container.innerHTML = '';
     if (noResultsMsg) noResultsMsg.style.display = 'block';
@@ -418,17 +448,5 @@ function escapeHTML(str) {
 }
 
 function getDefaultScientists() {
-  return [
-    {
-      id: 1,
-      nombre: "Lauren Flor Torres",
-      titulo: "PhD en Astrofísica",
-      profesion: "Docente e Investigadora",
-      institucion: "Universidad de Antioquia",
-      areas: ["Astrofísica Estelar", "Exoplanetas", "Etnoastronomía"],
-      correo: "contacto@astrochias.org",
-      redes: "https://www.linkedin.com/in/laurenflort",
-      foto: "https://raw.githubusercontent.com/astrochiacol/astrochias/main/images/junta/lauren.jpg"
-    }
-  ];
+  return [];
 }
