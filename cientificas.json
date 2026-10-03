@@ -1,7 +1,13 @@
 [
   {
-    "institucion": "Test",
-    "nombre": "Prueba",
-    "titulo": "Dr."
+    "areas": ["j"],
+    "correo": "",
+    "foto": "",
+    "id": 1791001970870,
+    "institucion": "h",
+    "nombre": "h",
+    "profesion": "h",
+    "redes": "",
+    "titulo": "h"
   }
 ]
