@@ -1,0 +1,36 @@
+name: Update cientificas.json
+
+on:
+  repository_dispatch:
+    types: [save_scientists]
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Overwrite cientificas.json
+        env:
+          PAYLOAD: ${{ github.event.client_payload }}
+        run: |
+          echo "${PAYLOAD}" | jq -r '.scientists' > cientificas.json
+          npx prettier --parser json --write cientificas.json
+
+      - name: Commit & push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cientificas.json
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "🤖 Update cientificas.json (auto)"
+            git push origin HEAD:${{ github.ref }}
+          fi
