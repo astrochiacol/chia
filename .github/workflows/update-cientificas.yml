@@ -20,7 +20,9 @@ jobs:
 
       - name: Overwrite cientificas.json
         run: |
-          echo "${{ toJSON(github.event.client_payload.scientists) }}" > cientificas.json
+          cat <<'EOF' > cientificas.json
+          ${{ toJSON(github.event.client_payload.scientists) }}
+          EOF
           npx prettier --parser json --write cientificas.json
 
       - name: Commit & push changes
