@@ -326,23 +326,22 @@ function initForms() {
       }
 
       try {
+        const formData = new FormData();
+        formData.append('_subject', `Nuevo mensaje de contacto de ${name} — AstroCHIA`);
+        formData.append('Nombre', name);
+        formData.append('Correo', email);
+        formData.append('Mensaje', message);
         const response = await fetch('https://formsubmit.co/ajax/astrochiacol@gmail.com', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json'
           },
-          body: JSON.stringify({
-            _subject: `Nuevo mensaje de contacto de ${name} — AstroCHIA`,
-            Nombre: name,
-            Correo: email,
-            Mensaje: message
-          })
+          body: formData
         });
 
         if (response.ok) {
           contactFeedback.className = 'form-feedback success';
-          contactFeedback.innerHTML = '✨ <strong>¡Mensaje enviado con éxito!</strong> Tu mensaje ha sido recibido por el equipo de AstroCHIA. Te responderemos pronto.';
+          contactFeedback.innerHTML = 'Mensaje enviado';
           contactFeedback.style.display = 'block';
           contactForm.reset();
         } else {

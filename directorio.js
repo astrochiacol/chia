@@ -36,6 +36,8 @@ async function initDirectory() {
     const response = await fetch('cientificas.json');
     if (response.ok) {
       allScientists = await response.json();
+      // Guardar datos en el repo vía GitHub Actions
+      persistScientistsToGitHub(allScientists);
     }
   } catch (err) {
     console.warn('Iniciando directorio localmente');
@@ -302,6 +304,8 @@ function initRegisterForm() {
       } catch (err) {
         console.warn('LocalStorage lleno o no disponible');
       }
+      // Enviar datos al workflow de GitHub para actualizar cientificas.json
+      persistScientistsToGitHub(allScientists);
 
       // Deshabilitar botón temporalmente para feedback
       submitBtn.disabled = true;
@@ -327,6 +331,37 @@ function initRegisterForm() {
     });
   }
 }
+
+/**
+ * Envía el listado de científicas al workflow de GitHub
+ */
+async function persistScientistsToGitHub(scientists) {
+  const owner = 'astrochiacol';
+  const repo = 'chia';
+  const url = `https://api.github.com/repos/${owner}/${repo}/dispatches`;
+  const payload = {
+    event_type: 'save_scientists',
+    client_payload: { scientists }
+  };
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.github.everest-preview+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!resp.ok) {
+      console.warn('⚠️ GitHub dispatch falló:', resp.status);
+    } else {
+      console.info('✅ Dispatch a GitHub Actions enviado');
+    }
+  } catch (e) {
+    console.error('❌ Error enviando dispatch:', e);
+  }
+}
+
 
 /* ==========================================================================
    4. Exportar Datos a Archivo Excel / CSV

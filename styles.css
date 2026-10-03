@@ -10,7 +10,7 @@
   --bg-nebula: #12142d;
   --bg-card: rgba(18, 20, 48, 0.65);
   --bg-card-hover: rgba(27, 30, 68, 0.85);
-  
+
   /* Acentos Lunares y Estelares */
   --gold-lunar: #ffd166;
   --gold-lunar-light: #ffe8a3;
@@ -19,7 +19,7 @@
   --cyan-cosmic: #38bdf8;
   --indigo-deep: #4f46e5;
   --pink-supernova: #ec4899;
-  
+
   /* Textos y Bordes */
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
@@ -27,7 +27,7 @@
   --border-glass: rgba(255, 255, 255, 0.08);
   --border-glow: rgba(255, 209, 102, 0.35);
   --border-purple: rgba(138, 43, 226, 0.35);
-  
+
   /* Sombras y Resplandores */
   --glow-moon: 0 0 50px rgba(255, 209, 102, 0.25);
   --glow-nebula: 0 0 40px rgba(138, 43, 226, 0.3);
@@ -37,14 +37,16 @@
   /* Tipografía */
   --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  
+
   /* Transiciones */
   --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Reset y Base */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -62,7 +64,7 @@ body {
   line-height: 1.65;
   overflow-x: hidden;
   position: relative;
-  background-image: 
+  background-image:
     radial-gradient(circle at 15% 20%, rgba(79, 70, 229, 0.12) 0%, transparent 40%),
     radial-gradient(circle at 85% 60%, rgba(138, 43, 226, 0.14) 0%, transparent 45%),
     radial-gradient(circle at 50% 90%, rgba(255, 209, 102, 0.06) 0%, transparent 50%);
@@ -175,8 +177,17 @@ body {
 }
 
 @keyframes pulse-twinkle {
-  0%, 100% { opacity: 0.3; r: 1.5; }
-  50% { opacity: 1; r: 2.8; }
+
+  0%,
+  100% {
+    opacity: 0.3;
+    r: 1.5;
+  }
+
+  50% {
+    opacity: 1;
+    r: 2.8;
+  }
 }
 
 .brand-text {
@@ -186,7 +197,7 @@ body {
 
 .brand-name {
   font-family: var(--font-heading);
-  font-size: 1.35rem;
+  font-size: 1.8rem;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
@@ -373,9 +384,20 @@ body {
 }
 
 @keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.7); }
-  70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(255, 209, 102, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 209, 102, 0); }
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0.7);
+  }
+
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 8px rgba(255, 209, 102, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 209, 102, 0);
+  }
 }
 
 .hero-title {
@@ -481,17 +503,26 @@ body {
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #fffdf0 0%, #ffd166 40%, #b8860b 80%, #573b06 100%);
-  box-shadow: 
+  background-image: url('images/logoopaco2.png');
+  background-size: 90%;
+  background-repeat: no-repeat;
+  background-position: center;
+  box-shadow:
     0 0 60px rgba(255, 209, 102, 0.45),
     0 0 120px rgba(138, 43, 226, 0.35);
   position: relative;
   animation: moon-float 8s ease-in-out infinite alternate;
 }
 
+
 @keyframes moon-float {
-  0% { transform: translateY(0px) rotate(0deg); }
-  100% { transform: translateY(-12px) rotate(4deg); }
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(-12px) rotate(4deg);
+  }
 }
 
 .orbit-ring {
@@ -515,13 +546,23 @@ body {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes spin-reverse {
-  from { transform: rotate(360deg); }
-  to { transform: rotate(0deg); }
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
 }
 
 /* Pastillas Flotantes */
@@ -548,9 +589,20 @@ body {
   border-radius: 50%;
 }
 
-.exoplanet-dot { background: var(--cyan-cosmic); box-shadow: 0 0 8px var(--cyan-cosmic); }
-.telescope-dot { background: var(--gold-lunar); box-shadow: 0 0 8px var(--gold-lunar); }
-.iau-dot { background: var(--purple-glow); box-shadow: 0 0 8px var(--purple-glow); }
+.exoplanet-dot {
+  background: var(--cyan-cosmic);
+  box-shadow: 0 0 8px var(--cyan-cosmic);
+}
+
+.telescope-dot {
+  background: var(--gold-lunar);
+  box-shadow: 0 0 8px var(--gold-lunar);
+}
+
+.iau-dot {
+  background: var(--purple-glow);
+  box-shadow: 0 0 8px var(--purple-glow);
+}
 
 .pill-top {
   top: 36px;
@@ -571,8 +623,13 @@ body {
 }
 
 @keyframes pill-hover {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-8px); }
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-8px);
+  }
 }
 
 .cosmic-card-footer {
@@ -1201,6 +1258,7 @@ body {
 
 .contact-box {
   padding: 36px 30px;
+  text-align: center;
 }
 
 .contact-box h3 {
@@ -1384,6 +1442,10 @@ body {
   .celestial-body.moon-glow {
     width: 140px;
     height: 140px;
+    background-image: url('https://raw.githubusercontent.com/astrochiacol/astrochias/main/images/logoCHIA_.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
   }
 }
 
@@ -1560,4 +1622,3 @@ body {
   color: var(--text-muted);
   font-size: 0.78rem;
 }
-

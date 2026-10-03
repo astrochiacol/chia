@@ -11,7 +11,7 @@ Sitio web oficial, moderno, interactivo y optimizado para ser publicado **100% g
 
 - **Diseño Cósmico Moderno**: Fondo interactivo con estrellas en movimiento y estrellas fugaces en HTML5 Canvas.
 - **Junta Directiva Oficial**: Presentación de las investigadoras líderes con fotos oficiales, perfiles y enlaces académicos.
-- **Página de Directorio de Científicas (`directorio.html`)**:
+- **Página de Directorio de Científicas (`directorio.html`)**: [Directorio de Científicas](https://TU-USUARIO-GITHUB.github.io/chia/directorio.html)
   - Búsqueda en tiempo real por **Nombre, Institución o Campo de Investigación**.
   - Tarjetas sencillas con título, profesión, institución, áreas y redes/contacto.
   - Foto opcional (si no se sube, se genera un avatar con iniciales automáticamente).
