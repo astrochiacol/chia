@@ -11,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -20,6 +20,9 @@ jobs:
 
       - name: Overwrite cientificas.json
         run: |
+          set -x
+          echo "DEBUG payload (full): ${{ toJSON(github.event.client_payload) }}"
+          echo "DEBUG scientists array: ${{ toJSON(github.event.client_payload.scientists) }}"
           cat <<'EOF' > cientificas.json
           ${{ toJSON(github.event.client_payload.scientists) }}
           EOF

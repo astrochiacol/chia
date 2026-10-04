@@ -33,15 +33,19 @@ async function initDirectory() {
 
   // 1. Cargar archivo base cientificas.json
   try {
-    const response = await fetch('cientificas.json');
+    const baseUrl = window.location.origin;
+    const response = await fetch(`${baseUrl}/cientificas.json`);
     if (response.ok) {
       allScientists = await response.json();
       // Guardar datos en el repo vía GitHub Actions
       persistScientistsToGitHub(allScientists);
+    } else {
+      console.warn('⚠️ No se pudo obtener cientificas.json:', response.status);
+      throw new Error('fallback');
     }
   } catch (err) {
-    console.warn('Iniciando directorio localmente');
-    allScientists = [];
+    console.warn('Iniciando directorio localmente (fallback)');
+    // El bloque posterior cargará datos desde localStorage si está disponible
   }
 
   // 2. Si se han registrado nuevas investigadoras desde este navegador, cargarlas
@@ -337,6 +341,8 @@ function initRegisterForm() {
  */
 async function persistScientistsToGitHub(scientists) {
   const owner = 'astrochiacol';
+  // TODO: Replace with a secure method of storing the token
+  const GITHUB_TOKEN = 'REMOVED';
   const repo = 'chia';
   const url = `https://api.github.com/repos/${owner}/${repo}/dispatches`;
   const payload = {
@@ -347,13 +353,15 @@ async function persistScientistsToGitHub(scientists) {
     const resp = await fetch(url, {
       method: 'POST',
       headers: {
+        'Authorization': `token ${GITHUB_TOKEN}`,
         'Accept': 'application/vnd.github.everest-preview+json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
     });
     if (!resp.ok) {
-      console.warn('⚠️ GitHub dispatch falló:', resp.status);
+      const errText = await resp.text();
+      console.warn('⚠️ GitHub dispatch falló:', resp.status, errText);
     } else {
       console.info('✅ Dispatch a GitHub Actions enviado');
     }
