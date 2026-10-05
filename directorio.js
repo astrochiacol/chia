@@ -308,10 +308,13 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, store it as a Base64 data URL (no Firebase upload)
+        // If a photo was selected, upload it to Firebase Storage and store the download URL
         if (uploadedPhotoBase64) {
-          console.log('Using uploaded Base64 photo for scientist record');
-          newScientist.foto = uploadedPhotoBase64;
+          console.log('Uploading photo to Firebase Storage');
+          const photoURL = await uploadToFirebase(uploadedPhotoBase64);
+          if (photoURL) {
+            newScientist.foto = photoURL;
+          }
         }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
