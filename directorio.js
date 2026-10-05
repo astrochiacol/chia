@@ -276,6 +276,8 @@ function initRegisterForm() {
       const areasRaw = document.getElementById('form-areas').value.trim();
       const correo = document.getElementById('form-correo').value.trim();
       const redes = document.getElementById('form-redes').value.trim();
+      const ciudad = document.getElementById('form-ciudad').value.trim();
+      const pais = document.getElementById('form-pais').value.trim();
 
       const areasArray = areasRaw
         ? areasRaw.split(',').map(s => s.trim()).filter(Boolean)
@@ -287,6 +289,8 @@ function initRegisterForm() {
         titulo,
         profesion,
         institucion,
+        ciudad,
+        pais,
         areas: areasArray,
         correo,
         redes,
@@ -389,7 +393,7 @@ function exportToCSV() {
   }
 
   // Encabezados para Excel
-  const headers = ['Nombre', 'Titulo', 'Profesion', 'Institucion', 'Areas_de_Investigacion', 'Correo', 'Redes_o_Perfil'];
+  const headers = ['Nombre', 'Titulo', 'Profesion', 'Institucion', 'Ciudad', 'Pais', 'Areas_de_Investigacion', 'Correo', 'Redes_o_Perfil'];
 
   const rows = allScientists.map(s => {
     const areas = Array.isArray(s.areas) ? s.areas.join('; ') : s.areas || '';
@@ -398,6 +402,8 @@ function exportToCSV() {
       `"${(s.titulo || '').replace(/"/g, '""')}"`,
       `"${(s.profesion || '').replace(/"/g, '""')}"`,
       `"${(s.institucion || '').replace(/"/g, '""')}"`,
+      `"${(s.ciudad || '').replace(/"/g, '""')}"`,
+      `"${(s.pais || '').replace(/"/g, '""')}"`,
       `"${areas.replace(/"/g, '""')}"`,
       `"${(s.correo || '').replace(/"/g, '""')}"`,
       `"${(s.redes || '').replace(/"/g, '""')}"`
