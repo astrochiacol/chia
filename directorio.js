@@ -5,9 +5,8 @@
 import { db, ref, onValue, set, push } from "./firebase-config.js";
 import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// Default avatar URL for profiles without photo
+// Logo oficial de AstroCHIA como avatar por defecto (URL absoluta para evitar problemas de rutas)
 const defaultAvatar = 'https://raw.githubusercontent.com/astrochiacol/astrochias/main/images/logoCHIA_.png';
-
 
 document.addEventListener('DOMContentLoaded', () => {
   initStarfield();
@@ -16,12 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initYear();
 });
 
-
-
 let allScientists = [];
 let currentCategory = 'all';
 let currentSearchTerm = '';
-
 
 /* ==========================================================================
    1. Carga y Gestión del Directorio
@@ -45,10 +41,6 @@ async function initDirectory() {
     console.warn('⚠️ Error al cargar datos desde Firebase:', error);
     allScientists = [];
   });
-
-
-
-  // Render inicial
 
   // Búsqueda en tiempo real (por nombre, institución o campo)
   if (searchInput) {
@@ -106,7 +98,6 @@ function showNotification(message, isError = false) {
   notif.textContent = message;
   notif.style.background = isError ? 'rgba(255,0,0,0.8)' : 'var(--gold-lunar)';
   notif.style.display = 'block';
-  // Fade out after 3 seconds
   setTimeout(() => {
     notif.style.display = 'none';
   }, 3000);
@@ -122,8 +113,7 @@ function renderCards() {
   if (!container) return;
 
   const filtered = allScientists.filter(scientist => {
-    // Coincidencia de búsqueda (Nombre, Institución o Áreas)
-    const nameMatch = scientist.nombre.toLowerCase().includes(currentSearchTerm);
+    const nameMatch = (scientist.nombre || '').toLowerCase().includes(currentSearchTerm);
     const instMatch = (scientist.institucion || '').toLowerCase().includes(currentSearchTerm);
     const titleMatch = (scientist.titulo || '').toLowerCase().includes(currentSearchTerm);
     const areasString = (Array.isArray(scientist.areas) ? scientist.areas.join(' ') : (scientist.areas || '')).toLowerCase();
@@ -131,7 +121,6 @@ function renderCards() {
 
     const matchesSearch = currentSearchTerm === '' || (nameMatch || instMatch || titleMatch || areasMatch);
 
-    // Coincidencia de categoría
     let matchesCategory = currentCategory === 'all';
     if (!matchesCategory) {
       matchesCategory = areasString.includes(currentCategory);
@@ -180,24 +169,38 @@ function renderCards() {
   if (noResultsMsg) noResultsMsg.style.display = 'none';
 
   container.innerHTML = filtered.map(item => {
-    const areas = Array.isArray(item.areas) 
-      ? item.areas 
+    const areas = Array.isArray(item.areas)
+      ? item.areas
       : (typeof item.areas === 'string' ? item.areas.split(',').map(s => s.trim()) : []);
 
-    const initials = item.nombre
-      .split(' ')
-      .slice(0, 2)
-      .map(w => w[0])
-      .join('')
-      .toUpperCase();
+    // Validación estricta de la imagen para descartar URLs rotas, 'null' o vacías
+    let fotoSrc = defaultAvatar;
+    if (
+      item.foto &&
+      typeof item.foto === 'string' &&
+      item.foto.trim() !== '' &&
+      item.foto !== 'null' &&
+      item.foto !== 'undefined'
+    ) {
+      const limpia = item.foto.trim();
+      if (limpia.startsWith('http://') || limpia.startsWith('https://') || limpia.startsWith('data:image/')) {
+        fotoSrc = limpia;
+      }
+    }
 
-    // Foto opcional o avatar con placeholder
-    const fotoSrc = item.foto && item.foto.trim() ? item.foto : defaultAvatar;
-    const avatarHtml = `<div class="card-avatar-photo"><img src="${fotoSrc}" alt="${item.nombre}" class="member-img" onerror="this.onerror=null; this.src='${defaultAvatar}';"></div>`;
+    const avatarHtml = `
+      <div class="card-avatar-photo">
+        <img 
+          src="${fotoSrc}" 
+          alt="${escapeHTML(item.nombre || 'Científica')}" 
+          class="member-img" 
+          onerror="this.onerror=null; this.src='${defaultAvatar}';"
+          loading="lazy"
+        />
+      </div>
+    `;
 
-
-
-    // Enlaces de contacto (redes y/o correo si los proporcionaron)
+    // Enlaces de contacto
     let contactLinksHtml = '';
     if (item.correo) {
       contactLinksHtml += `<a href="mailto:${item.correo}" class="contact-pill-btn" title="Enviar correo">
@@ -221,7 +224,7 @@ function renderCards() {
             <p class="scientist-card-degree">${escapeHTML(item.titulo || '')}</p>
             <p class="scientist-card-role">${escapeHTML(item.profesion || '')}</p>
           </div>
-          <p class="scientist-card-location"> Ubicación: ${escapeHTML(item.pais || 'Desconocida')}</p>
+          <p class="scientist-card-location">Ubicación: ${escapeHTML(item.pais || 'Desconocida')}</p>
         </div>
 
         <div class="card-institution-row">
@@ -244,20 +247,27 @@ function renderCards() {
    ========================================================================== */
 function initRegisterForm() {
   const form = document.getElementById('scientist-register-form');
-
   const feedback = document.getElementById('register-feedback');
   const submitBtn = document.getElementById('btn-submit-register');
-  // Photo preview elements
   const fotoInput = document.getElementById('fotoInput');
   const previewContainer = document.getElementById('photo-preview-container');
   const previewImg = document.getElementById('photo-preview');
   let fotoBase64 = null;
 
-  // Handle photo selection
+  // Manejo de la selección de foto con control de peso (máx 2MB)
   if (fotoInput) {
     fotoInput.addEventListener('change', () => {
       const file = fotoInput.files[0];
       if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          alert('La fotografía no debe superar los 2MB.');
+          fotoInput.value = '';
+          fotoBase64 = null;
+          if (previewImg) previewImg.src = '';
+          if (previewContainer) previewContainer.style.display = 'none';
+          return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
           fotoBase64 = e.target.result;
@@ -272,25 +282,22 @@ function initRegisterForm() {
       }
     });
   }
-    
-  // Previsualización de foto (opcional)
-  
 
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const nombre = document.getElementById('form-nombre').value.trim();
-        const tituloPrefix = document.getElementById('form-titulo-prefix').value;
-        const tituloSuffix = document.getElementById('form-titulo-suffix').value.trim();
-        const titulo = tituloPrefix ? (tituloPrefix + (tituloSuffix ? ' ' + tituloSuffix : '')) : tituloSuffix;
-      const profesion = document.getElementById('form-profesion').value.trim();
-      const institucion = document.getElementById('form-institucion').value.trim();
-      const areasRaw = document.getElementById('form-areas').value.trim();
-      const correo = document.getElementById('form-correo').value.trim();
-      const redes = document.getElementById('form-redes').value.trim();
-      const ciudad = document.getElementById('form-ciudad').value.trim();
-      const pais = document.getElementById('form-pais').value.trim();
+      const tituloPrefix = document.getElementById('form-titulo-prefix') ? document.getElementById('form-titulo-prefix').value : '';
+      const tituloSuffix = document.getElementById('form-titulo-suffix') ? document.getElementById('form-titulo-suffix').value.trim() : '';
+      const titulo = tituloPrefix ? (tituloPrefix + (tituloSuffix ? ' ' + tituloSuffix : '')) : tituloSuffix;
+      const profesion = document.getElementById('form-profesion') ? document.getElementById('form-profesion').value.trim() : '';
+      const institucion = document.getElementById('form-institucion') ? document.getElementById('form-institucion').value.trim() : '';
+      const areasRaw = document.getElementById('form-areas') ? document.getElementById('form-areas').value.trim() : '';
+      const correo = document.getElementById('form-correo') ? document.getElementById('form-correo').value.trim() : '';
+      const redes = document.getElementById('form-redes') ? document.getElementById('form-redes').value.trim() : '';
+      const ciudad = document.getElementById('form-ciudad') ? document.getElementById('form-ciudad').value.trim() : '';
+      const pais = document.getElementById('form-pais') ? document.getElementById('form-pais').value.trim() : '';
 
       const areasArray = areasRaw
         ? areasRaw.split(',').map(s => s.trim()).filter(Boolean)
@@ -307,56 +314,49 @@ function initRegisterForm() {
         areas: areasArray,
         correo,
         redes,
-        foto: fotoBase64 // base64 image or null
+        foto: fotoBase64 || null
       };
 
-      // Agregar al inicio del arreglo
       allScientists.unshift(newScientist);
 
-      // Desactivar botón mientras se guarda
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Guardando registro...</span>';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Guardando registro...</span>';
+      }
 
       try {
-
         await persistScientistsToFirebase(allScientists);
-        feedback.className = 'form-feedback success';
-        feedback.innerHTML = `✨ <strong>¡Registro exitoso!</strong> Tu tarjeta ha sido creada y agregada al directorio de científicas.`;
+        if (feedback) {
+          feedback.className = 'form-feedback success';
+          feedback.innerHTML = `✨ <strong>¡Registro exitoso!</strong> Tu tarjeta ha sido creada y agregada al directorio de científicas.`;
+        }
       } catch (err) {
-        feedback.className = 'form-feedback';
-        feedback.innerHTML = `⚠️ <strong>¡Error!</strong> No se pudo guardar la información.`;
+        if (feedback) {
+          feedback.className = 'form-feedback';
+          feedback.innerHTML = `⚠️ <strong>¡Error!</strong> No se pudo guardar la información.`;
+        }
         console.error(err);
       } finally {
         if (feedback) feedback.style.display = 'block';
-        // Reset del formulario
         form.reset();
         fotoBase64 = null;
         if (previewContainer) previewContainer.style.display = 'none';
-        // Reactivar botón
-        if (submitBtn) submitBtn.disabled = false;
-        if (submitBtn) submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-        // Actualizar UI
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        }
         renderCards();
-        document.getElementById('directory-cards-container').scrollIntoView({ behavior: 'smooth' });
+        const cardsContainer = document.getElementById('directory-cards-container');
+        if (cardsContainer) cardsContainer.scrollIntoView({ behavior: 'smooth' });
       }
     });
-
-
-
   }
 }
 
-// Map functionality removed
-
-
-
-
 /**
- * Persiste el listado de científicas en Firebase Realtime Database y retorna una promesa.
+ * Persiste el listado de científicas en Firebase Realtime Database
  */
 function persistScientistsToFirebase(scientists) {
-  // Ensure we write to the correct path and log the payload for debugging
-  console.debug('Persisting scientists to Firebase:', scientists);
   const dbRef = ref(db, '/scientists');
   return set(dbRef, scientists)
     .then(() => {
@@ -368,54 +368,6 @@ function persistScientistsToFirebase(scientists) {
     });
 }
 
-  async function uploadToFirebase(base64Data) {
-    console.log('Attempting to upload image to Firebase Storage');
-    console.log('Base64 data preview:', base64Data.substring(0,30), '...');
-    try {
-      const storage = getStorage();
-      const fileName = `scientist_${Date.now()}`;
-      const imgRef = storageRef(storage, `images/cientificas/${fileName}`);
-      // uploadString with 'data_url' preserves the data URL header
-      await uploadString(imgRef, base64Data, 'data_url');
-      const downloadURL = await getDownloadURL(imgRef);
-      console.info('✅ Image uploaded to Firebase Storage:', downloadURL);
-      return downloadURL;
-    } catch (err) {
-      console.error('❌ Error uploading image to Firebase Storage:', err);
-      return '';
-    }
-  }
-
-
-
-async function uploadImageToRepo(base64Data) {
-  try {
-    const fileName = `scientist_${Date.now()}.png`;
-    const baseUrl = window.location.origin;
-    const resp = await fetch(`${baseUrl}/.netlify/functions/upload-image`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64Data, fileName })
-    });
-    console.log('Upload response status:', resp.status);
-    if (!resp.ok) {
-      const err = await resp.text();
-      console.error('❌ GitHub upload failed:', err);
-      return '';
-    }
-    const data = await resp.json();
-    if (!data.url) {
-      console.warn('⚠️ No URL returned from upload-image function');
-      return '';
-    }
-    return data.url;
-  } catch (e) {
-    console.error('❌ Error uploading image to GitHub via Netlify:', e);
-    return '';
-  }
-}
-
-
 /* ==========================================================================
    4. Exportar Datos a Archivo Excel / CSV
    ========================================================================== */
@@ -425,7 +377,6 @@ function exportToCSV() {
     return;
   }
 
-  // Encabezados para Excel
   const headers = ['Nombre', 'Titulo', 'Profesion', 'Institucion', 'Ciudad', 'Pais', 'Areas_de_Investigacion', 'Correo', 'Redes_o_Perfil'];
 
   const rows = allScientists.map(s => {
@@ -443,9 +394,7 @@ function exportToCSV() {
     ].join(',');
   });
 
-  // \uFEFF es el BOM de UTF-8 para que Microsoft Excel abra los acentos (ñ, tildes) automáticamente bien
   const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\r\n');
-
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -536,8 +485,3 @@ function escapeHTML(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
-
-function getDefaultScientists() {
-  return [];
-}
-
