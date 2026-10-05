@@ -35,6 +35,7 @@ async function initDirectory() {
     const data = snap.val();
     allScientists = data ? data : [];
     renderCards();
+    showNotification('Datos cargados');
   }, (error) => {
     console.warn('⚠️ Error al cargar datos desde Firebase:', error);
     allScientists = [];
@@ -91,6 +92,19 @@ async function initDirectory() {
 
   // Formulario de Registro
   initRegisterForm();
+}
+
+// Utility to show toast notifications
+function showNotification(message, isError = false) {
+  const notif = document.getElementById('notification');
+  if (!notif) return;
+  notif.textContent = message;
+  notif.style.background = isError ? 'rgba(255,0,0,0.8)' : 'var(--gold-lunar)';
+  notif.style.display = 'block';
+  // Fade out after 3 seconds
+  setTimeout(() => {
+    notif.style.display = 'none';
+  }, 3000);
 }
 
 /* ==========================================================================
@@ -245,14 +259,9 @@ function initRegisterForm() {
         reader.readAsDataURL(file);
       } else {
         uploadedPhotoBase64 = '';
-        if (previewContainer) previewContainer.style.display = 'none';
-      }
-    });
-  }
-
-  // Envío del formulario
+        if (previewContainer) previewContainer.style.display = 'none'; // Envío del formulario
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const nombre = document.getElementById('form-nombre').value.trim();
@@ -282,30 +291,33 @@ function initRegisterForm() {
       // Agregar al inicio del arreglo
       allScientists.unshift(newScientist);
 
-
-      // Enviar datos al workflow de GitHub para actualizar cientificas.json
-      persistScientistsToFirebase(allScientists);
-
-      // Deshabilitar botón temporalmente para feedback
+      // Desactivar botón mientras se guarda
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
-      setTimeout(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-
+      try {
+        await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
         feedback.innerHTML = `✨ <strong>¡Registro exitoso!</strong> Tu tarjeta ha sido creada y agregada al directorio de científicas.`;
+      } catch (err) {
+        feedback.className = 'form-feedback';
+        feedback.innerHTML = `⚠️ <strong>¡Error!</strong> No se pudo guardar la información.`;
+        console.error(err);
+      } finally {
         feedback.style.display = 'block';
-
         // Reset del formulario
         form.reset();
         uploadedPhotoBase64 = '';
         if (previewContainer) previewContainer.style.display = 'none';
-
-        // Actualizar tarjetas en pantalla y scroll suave a los resultados
+        // Reactivar botón
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        // Actualizar UI
         renderCards();
         document.getElementById('directory-cards-container').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }r: 'smooth' });
       }, 700);
     });
   }
