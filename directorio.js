@@ -342,7 +342,7 @@ function initRegisterForm() {
 async function persistScientistsToGitHub(scientists) {
   const owner = 'astrochiacol';
   // TODO: Replace with a secure method of storing the token
-  const GITHUB_TOKEN = 'REMOVED';
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // TODO: Provide token via CI secret
   const repo = 'chia';
   const url = `https://api.github.com/repos/${owner}/${repo}/dispatches`;
   const payload = {
