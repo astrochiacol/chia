@@ -188,10 +188,10 @@ function renderCards() {
       .join('')
       .toUpperCase();
 
-    // Foto opcional o avatar con iniciales
-    const avatarHtml = item.foto 
+    // Foto opcional o avatar con placeholder
+    const avatarHtml = item.foto && item.foto.trim()
       ? `<div class="card-avatar-photo"><img src="${item.foto}" alt="${item.nombre}" class="member-img"></div>`
-      : `<div class="card-avatar-initials">${initials}</div>`;
+      : `<div class="card-avatar-photo"><img src="https://via.placeholder.com/84?text=Avatar" alt="${item.nombre}" class="member-img"></div>`;
 
     // Enlaces de contacto (redes y/o correo si los proporcionaron)
     let contactLinksHtml = '';
