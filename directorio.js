@@ -260,6 +260,9 @@ function initRegisterForm() {
       } else {
         uploadedPhotoBase64 = '';
         if (previewContainer) previewContainer.style.display = 'none'; // Envío del formulario
+    }
+  });
+  }
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -317,9 +320,9 @@ function initRegisterForm() {
         document.getElementById('directory-cards-container').scrollIntoView({ behavior: 'smooth' });
       }
     });
-  }r: 'smooth' });
-      }, 700);
-    });
+
+
+
   }
 }
 
@@ -461,3 +464,4 @@ function escapeHTML(str) {
 function getDefaultScientists() {
   return [];
 }
+
