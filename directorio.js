@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initDirectory();
   initYear();
+  initEmailModalEvents();
 });
 
 let allScientists = [];
@@ -203,7 +204,18 @@ function renderCards() {
     // Enlaces de contacto
     let contactLinksHtml = '';
     if (item.correo) {
-      contactLinksHtml += `<button type="button" class="contact-pill-btn" data-email="${item.correo}" title="Mostrar correo" onclick="showEmail(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>Correo</span></button>`;
+      contactLinksHtml += `
+        <button 
+          type="button" 
+          class="contact-pill-btn btn-show-email" 
+          data-email="${escapeHTML(item.correo)}" 
+          data-name="${escapeHTML(item.nombre || 'Investigadora')}" 
+          title="Ver correo"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>Correo</span>
+        </button>
+      `;
     }
     if (item.redes) {
       contactLinksHtml += `<a href="${item.redes}" target="_blank" rel="noopener" class="contact-pill-btn" title="Ver perfil">
@@ -479,11 +491,71 @@ function initYear() {
   if (yearEl) yearEl.innerText = new Date().getFullYear();
 }
 
-function showEmail(button) {
-  const email = button.getAttribute('data-email');
-  if (email) {
-    // Simple display; could be replaced with a toast/modal for better UX
-    alert(`Correo: ${email}`);
+/* ==========================================================================
+   7. Ventana Modal de Correo
+   ========================================================================== */
+function initEmailModalEvents() {
+  const modal = document.getElementById('email-modal');
+  const closeBtn = document.getElementById('close-email-modal');
+  const modalName = document.getElementById('modal-scientist-name');
+  const modalEmail = document.getElementById('modal-email-text');
+  const copyBtn = document.getElementById('copy-email-btn');
+  const copyMsg = document.getElementById('copy-status-msg');
+
+  if (!modal) return;
+
+  // Delegación de eventos para capturar el click en cualquier botón de correo
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-show-email');
+    if (btn) {
+      const email = btn.getAttribute('data-email');
+      const name = btn.getAttribute('data-name');
+
+      if (modalName) modalName.textContent = name;
+      if (modalEmail) modalEmail.textContent = email;
+      if (copyMsg) copyMsg.style.display = 'none';
+      modal.style.display = 'flex';
+    }
+  });
+
+  // Cerrar al hacer clic en la X
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+  }
+
+  // Cerrar al hacer clic en el backdrop fuera del recuadro
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+
+  // Cerrar con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') {
+      modal.style.display = 'none';
+    }
+  });
+
+  // Botón Copiar al portapapeles
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const email = modalEmail ? modalEmail.textContent : '';
+      if (!email) return;
+
+      navigator.clipboard.writeText(email).then(() => {
+        if (copyMsg) {
+          copyMsg.style.display = 'block';
+          setTimeout(() => {
+            copyMsg.style.display = 'none';
+          }, 2500);
+        }
+      }).catch(err => {
+        console.error('Error al copiar al portapapeles:', err);
+      });
+    });
   }
 }
 
