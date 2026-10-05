@@ -3,7 +3,7 @@
  * Carga de datos • Búsqueda en tiempo real • Filtros • Registro dinámico • Exportación a Excel/CSV
  */
 import { db, ref, onValue, set, push } from "./firebase-config.js";
-import { IMGUR_CLIENT_ID } from "./imgur-config.js";
+import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -308,10 +308,10 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, upload it to Imgur first
+        // If a photo was selected, upload it to Firebase Storage first
         if (uploadedPhotoBase64) {
-          const imgurUrl = await uploadToImgur(uploadedPhotoBase64);
-          newScientist.foto = imgurUrl;
+          const firebaseUrl = await uploadToFirebase(uploadedPhotoBase64);
+          newScientist.foto = firebaseUrl;
         }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
@@ -340,6 +340,43 @@ function initRegisterForm() {
   }
 }
 
+// Initialize Leaflet map for country distribution
+let mapInstance = null;
+function initMap() {
+  // Prevent multiple initializations
+  if (mapInstance) return;
+  const mapDiv = document.getElementById('world-map');
+  if (!mapDiv) {
+    console.warn('Map container not found');
+    return;
+  }
+  // Create map centered on the world
+  mapInstance = L.map('world-map').setView([20, 0], 2);
+  // Add OpenStreetMap tile layer
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  }).addTo(mapInstance);
+
+  // Add markers for each scientist's country (using Nominatim for geocoding)
+  const added = new Set();
+  allScientists.forEach(sc => {
+    const country = sc.pais?.trim();
+    if (!country || added.has(country)) return;
+    added.add(country);
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(country)}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          const { lat, lon } = data[0];
+          const marker = L.marker([lat, lon]).addTo(mapInstance);
+          marker.bindPopup(`<strong>${country}</strong>`);
+        }
+      })
+      .catch(err => console.warn('Geocoding failed for', country, err));
+  });
+}
+
 
 
 
@@ -359,30 +396,18 @@ function persistScientistsToFirebase(scientists) {
 }
 
 // Upload base64 image to Imgur and return the image URL
-async function uploadToImgur(base64Data) {
-  if (!IMGUR_CLIENT_ID) {
-    console.warn('⚠️ IMGUR_CLIENT_ID not set. Skipping image upload.');
-    return '';
-  }
+async function uploadToFirebase(base64Data) {
   try {
-    const response = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: {
-        Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
-        Accept: 'application/json'
-      },
-      body: new URLSearchParams({ image: base64Data.split(',')[1] }) // remove data URL prefix
-    });
-    const result = await response.json();
-    if (result.success && result.data && result.data.link) {
-      console.info('✅ Image uploaded to Imgur:', result.data.link);
-      return result.data.link;
-    } else {
-      console.warn('⚠️ Imgur upload failed:', result);
-      return '';
-    }
+    const storage = getStorage();
+    const fileName = `scientist_${Date.now()}`;
+    const imgRef = storageRef(storage, `images/${fileName}`);
+    // uploadString with 'data_url' preserves the data URL header
+    await uploadString(imgRef, base64Data, 'data_url');
+    const downloadURL = await getDownloadURL(imgRef);
+    console.info('✅ Image uploaded to Firebase Storage:', downloadURL);
+    return downloadURL;
   } catch (err) {
-    console.error('❌ Error uploading image to Imgur:', err);
+    console.error('❌ Error uploading image to Firebase Storage:', err);
     return '';
   }
 }
