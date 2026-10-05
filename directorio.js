@@ -2,6 +2,7 @@
  * AstroCHIA — Directorio de Científicas
  * Carga de datos • Búsqueda en tiempo real • Filtros • Registro dinámico • Exportación a Excel/CSV
  */
+import { db, ref, onValue, set, push } from "./firebase-config.js";
 
 document.addEventListener('DOMContentLoaded', () => {
   initStarfield();
@@ -28,27 +29,20 @@ async function initDirectory() {
   const exportBtn = document.getElementById('btn-export-excel');
   const resetBtn = document.getElementById('btn-reset-filters');
 
-  // 1. Cargar archivo base cientificas.json
-  try {
-    const baseUrl = window.location.origin;
-    const response = await fetch(`${baseUrl}/cientificas.json`);
-    if (response.ok) {
-      allScientists = await response.json();
-      // Guardar datos en el repo vía GitHub Actions
-      persistScientistsToGitHub(allScientists);
-    } else {
-      console.warn('⚠️ No se pudo obtener cientificas.json:', response.status);
-      throw new Error('fallback');
-    }
-  } catch (err) {
-    console.warn('Iniciando directorio localmente (fallback)');
-    // El bloque posterior cargará datos desde localStorage si está disponible
-  }
+  // 1. Cargar datos desde Firebase Realtime Database y escuchar cambios en tiempo real
+  const dbRef = ref(db, 'scientists');
+  onValue(dbRef, (snap) => {
+    const data = snap.val();
+    allScientists = data ? data : [];
+    renderCards();
+  }, (error) => {
+    console.warn('⚠️ Error al cargar datos desde Firebase:', error);
+    allScientists = [];
+  });
 
 
 
   // Render inicial
-  renderCards();
 
   // Búsqueda en tiempo real (por nombre, institución o campo)
   if (searchInput) {
@@ -290,7 +284,7 @@ function initRegisterForm() {
 
 
       // Enviar datos al workflow de GitHub para actualizar cientificas.json
-      persistScientistsToGitHub(allScientists);
+      persistScientistsToFirebase(allScientists);
 
       // Deshabilitar botón temporalmente para feedback
       submitBtn.disabled = true;
@@ -318,36 +312,15 @@ function initRegisterForm() {
 }
 
 /**
- * Envía el listado de científicas al workflow de GitHub
+ * Persiste el listado de científicas en Firebase Realtime Database
  */
-async function persistScientistsToGitHub(scientists) {
-  const owner = 'astrochiacol';
-  // TODO: Replace with a secure method of storing the token
-  const GTHUB_TOKEN = process.env.GTHUB_TOKEN; // TODO: Provide token via CI secret
-  const repo = 'chia';
-  const url = `https://api.github.com/repos/${owner}/${repo}/dispatches`;
-  const payload = {
-    event_type: 'save_scientists',
-    client_payload: { scientists }
-  };
+async function persistScientistsToFirebase(scientists) {
   try {
-    // Enviar datos a la función serverless que usa el secret GTHUB_TOKEN
-    const resp = await fetch('/.netlify/functions/save-directory', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ scientists })
-    });
-    if (!resp.ok) {
-      const errText = await resp.text();
-      console.warn('⚠️ Error al guardar en GitHub vía función serverless:', resp.status, errText);
-    } else {
-      console.info('✅ Datos enviados a la función serverless y commit disparado');
-    }
+    const dbRef = ref(db, 'scientists');
+    await set(dbRef, scientists);
+    console.info('✅ Científicas guardadas en Firebase Realtime Database');
   } catch (e) {
-    console.error('❌ Error enviando dispatch:', e);
+    console.error('❌ Error guardando científicas en Firebase:', e);
   }
 }
 
