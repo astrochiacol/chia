@@ -11,7 +11,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.AUTO_COMMIT_TOKEN }}
+          token: ${{ secrets.GTHUB_TOKEN }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -23,7 +23,7 @@ jobs:
           set -x
           echo "DEBUG payload (full): ${{ toJSON(github.event.client_payload) }}"
           echo "DEBUG scientists array: ${{ toJSON(github.event.client_payload.scientists) }}"
-          cat <<'EOF' > cientificas.json
+          cat <<EOF > cientificas.json
           ${{ toJSON(github.event.client_payload.scientists) }}
           EOF
           npx prettier --parser json --write cientificas.json

@@ -2,7 +2,7 @@
 /**
  * Netlify Serverless Function
  * Receives a list of scientists from the client and forwards a GitHub repository_dispatch
- * event using the GITHUB_TOKEN secret defined in Netlify's environment variables.
+ * event using the GTHUB_TOKEN secret defined in Netlify's environment variables.
  */
 export async function handler(event, context) {
   try {
@@ -21,7 +21,7 @@ export async function handler(event, context) {
       {
         method: "POST",
         headers: {
-          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          Authorization: `token ${process.env.GTHUB_TOKEN}`,
           Accept: "application/vnd.github.everest-preview+json",
           "Content-Type": "application/json"
         },
