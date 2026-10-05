@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initStarfield();
   initNavigation();
-  initDirectoryFilters();
+  initDirectory();
   initStatsCounter();
   initForms();
   initYear();
