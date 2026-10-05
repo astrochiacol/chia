@@ -1533,7 +1533,7 @@ body {
 .card-simple-header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px; /* increased spacing for alignment */
   margin-bottom: 16px;
 }
 
@@ -1555,6 +1555,7 @@ body {
 }
 
 .card-title-group {
+  margin-left: 12px; /* increased spacing for alignment */
   display: flex;
   flex-direction: column;
 }
@@ -1590,6 +1591,7 @@ body {
   background: rgba(56, 189, 248, 0.08);
   border-radius: 8px;
   border: 1px solid rgba(56, 189, 248, 0.15);
+  margin-left: 12px; /* align with title group */
 }
 
 .card-simple-footer {
