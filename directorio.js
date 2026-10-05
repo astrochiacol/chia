@@ -5,6 +5,9 @@
 import { db, ref, onValue, set, push } from "./firebase-config.js";
 import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
+// Default avatar URL for profiles without photo
+const defaultAvatar = 'https://raw.githubusercontent.com/astrochiacol/astrochias/main/images/logoCHIA_.png';
+
 
 document.addEventListener('DOMContentLoaded', () => {
   initStarfield();
@@ -189,9 +192,10 @@ function renderCards() {
       .toUpperCase();
 
     // Foto opcional o avatar con placeholder
-    const avatarHtml = item.foto && item.foto.trim()
-      ? `<div class="card-avatar-photo"><img src="${item.foto}" alt="${item.nombre}" class="member-img"></div>`
-      : `<div class="card-avatar-photo"><img src="https://via.placeholder.com/84?text=${initials}" alt="${item.nombre}" class="member-img"></div>`;
+    const fotoSrc = item.foto && item.foto.trim() ? item.foto : defaultAvatar;
+    const avatarHtml = `<div class="card-avatar-photo"><img src="${fotoSrc}" alt="${item.nombre}" class="member-img" onerror="this.onerror=null; this.src='${defaultAvatar}';"></div>`;
+
+
 
     // Enlaces de contacto (redes y/o correo si los proporcionaron)
     let contactLinksHtml = '';
@@ -243,6 +247,31 @@ function initRegisterForm() {
 
   const feedback = document.getElementById('register-feedback');
   const submitBtn = document.getElementById('btn-submit-register');
+  // Photo preview elements
+  const fotoInput = document.getElementById('fotoInput');
+  const previewContainer = document.getElementById('photo-preview-container');
+  const previewImg = document.getElementById('photo-preview');
+  let fotoBase64 = null;
+
+  // Handle photo selection
+  if (fotoInput) {
+    fotoInput.addEventListener('change', () => {
+      const file = fotoInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          fotoBase64 = e.target.result;
+          if (previewImg) previewImg.src = fotoBase64;
+          if (previewContainer) previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        fotoBase64 = null;
+        if (previewImg) previewImg.src = '';
+        if (previewContainer) previewContainer.style.display = 'none';
+      }
+    });
+  }
     
   // Previsualización de foto (opcional)
   
@@ -278,7 +307,7 @@ function initRegisterForm() {
         areas: areasArray,
         correo,
         redes,
-        foto: '' // will be set after Imgur upload if applicable
+        foto: fotoBase64 // base64 image or null
       };
 
       // Agregar al inicio del arreglo
@@ -301,7 +330,7 @@ function initRegisterForm() {
         if (feedback) feedback.style.display = 'block';
         // Reset del formulario
         form.reset();
-        uploadedPhotoBase64 = '';
+        fotoBase64 = null;
         if (previewContainer) previewContainer.style.display = 'none';
         // Reactivar botón
         if (submitBtn) submitBtn.disabled = false;

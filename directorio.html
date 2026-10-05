@@ -388,6 +388,14 @@
               <div class="form-group">
                 <label for="form-redes">Enlace a Red Social o Perfil Académico (Opcional)</label>
                 <input type="url" id="form-redes" placeholder="https://linkedin.com/in/... o ORCID / Twitter">
+                <!-- Photo upload (optional) -->
+                <div class="form-group">
+                  <label for="fotoInput">Foto de perfil (opcional)</label>
+                  <input type="file" id="fotoInput" accept="image/*">
+                </div>
+                <div id="photo-preview-container" style="display:none; margin-top:10px;">
+                  <img id="photo-preview" src="" alt="Vista previa" style="max-width:150px; border-radius:8px;">
+                </div>
               </div>
             </div>
 
