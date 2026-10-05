@@ -339,22 +339,7 @@ function initRegisterForm() {
   }
 }
 
-// Reset Directory button: clears all scientists from Firebase and updates UI
-const resetBtn = document.getElementById('btn-reset-directory');
-if (resetBtn) {
-  resetBtn.addEventListener('click', async () => {
-    try {
-      await set(ref(db, 'scientists'), []);
-      allScientists = [];
-      renderCards();
-      updateMap();
-      showNotification('Directorio reiniciado', false);
-    } catch (err) {
-      console.error('Error resetting directory:', err);
-      showNotification('Error al reiniciar directorio', true);
-    }
-  });
-}
+
 
 
 /**
