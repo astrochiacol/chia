@@ -203,10 +203,10 @@ function renderCards() {
     // Enlaces de contacto
     let contactLinksHtml = '';
     if (item.correo) {
-      contactLinksHtml += `<a href="mailto:${item.correo}" class="contact-pill-btn" title="Enviar correo">
+      contactLinksHtml += `<button type="button" class="contact-pill-btn" data-email="${item.correo}" title="Mostrar correo" onclick="showEmail(this)">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         <span>Correo</span>
-      </a>`;
+      </button>`;
     }
     if (item.redes) {
       contactLinksHtml += `<a href="${item.redes}" target="_blank" rel="noopener" class="contact-pill-btn" title="Ver perfil">
@@ -482,7 +482,14 @@ function initYear() {
   if (yearEl) yearEl.innerText = new Date().getFullYear();
 }
 
-function escapeHTML(str) {
+function showEmail(button) {
+  const email = button.getAttribute('data-email');
+  if (email) {
+    // Simple display; could be replaced with a toast/modal for better UX
+    alert(`Correo: ${email}`);
+  }
+}
+
   if (!str) return '';
   return String(str)
     .replace(/&/g, '&amp;')
