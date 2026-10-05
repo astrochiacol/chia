@@ -659,6 +659,23 @@ body {
   position: relative;
 }
 
+/* Map container styling */
+#world-map {
+  width: 100%;
+  height: 500px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+/* Leaflet map tweaks */
+.leaflet-container {
+  background: transparent;
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+}
+
+
 .section-header {
   margin-bottom: 56px;
 }
@@ -999,6 +1016,13 @@ body {
   margin-bottom: 22px;
   flex-grow: 1;
 }
+
+ .scientist-card-location {
+    text-align: center;
+    width: 100%;
+    margin-top: 8px;   /* opcional: espacio extra */
+ }
+
 
 .card-actions {
   display: flex;

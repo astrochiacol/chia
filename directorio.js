@@ -3,7 +3,7 @@
  * Carga de datos • Búsqueda en tiempo real • Filtros • Registro dinámico • Exportación a Excel/CSV
  */
 import { db, ref, onValue, set, push } from "./firebase-config.js";
-import { IMGUR_CLIENT_ID } from "./imgur-config.js";
+import { getStorage, ref as storageRef, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -188,10 +188,10 @@ function renderCards() {
       .join('')
       .toUpperCase();
 
-    // Foto opcional o avatar con iniciales
-    const avatarHtml = item.foto 
+    // Foto opcional o avatar con placeholder
+    const avatarHtml = item.foto && item.foto.trim()
       ? `<div class="card-avatar-photo"><img src="${item.foto}" alt="${item.nombre}" class="member-img"></div>`
-      : `<div class="card-avatar-initials">${initials}</div>`;
+      : `<div class="card-avatar-photo"><img src="https://via.placeholder.com/84?text=${initials}" alt="${item.nombre}" class="member-img"></div>`;
 
     // Enlaces de contacto (redes y/o correo si los proporcionaron)
     let contactLinksHtml = '';
@@ -217,6 +217,7 @@ function renderCards() {
             <p class="scientist-card-degree">${escapeHTML(item.titulo || '')}</p>
             <p class="scientist-card-role">${escapeHTML(item.profesion || '')}</p>
           </div>
+          <p class="scientist-card-location"> Ubicación: ${escapeHTML(item.pais || 'Desconocida')}</p>
         </div>
 
         <div class="card-institution-row">
@@ -244,7 +245,7 @@ function initRegisterForm() {
   const previewImg = document.getElementById('photo-preview-img');
   const feedback = document.getElementById('register-feedback');
   const submitBtn = document.getElementById('btn-submit-register');
-
+    
   // Previsualización de foto (opcional)
   if (fileInput) {
     fileInput.addEventListener('change', (e) => {
@@ -261,7 +262,8 @@ function initRegisterForm() {
         reader.readAsDataURL(file);
       } else {
         uploadedPhotoBase64 = '';
-        if (previewContainer) previewContainer.style.display = 'none'; // Envío del formulario
+        if (previewContainer) previewContainer.style.display = 'none';
+        if (previewImg) previewImg.src = '';
     }
   });
   }
@@ -307,10 +309,13 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, upload it to Imgur first
+        // If a photo was selected, upload it to Firebase Storage and store the download URL
         if (uploadedPhotoBase64) {
-          const imgurUrl = await uploadToImgur(uploadedPhotoBase64);
-          newScientist.foto = imgurUrl;
+          console.log('Uploading photo to Firebase Storage');
+          const photoURL = await uploadToFirebase(uploadedPhotoBase64);
+          if (photoURL) {
+            newScientist.foto = photoURL;
+          }
         }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
@@ -320,14 +325,14 @@ function initRegisterForm() {
         feedback.innerHTML = `⚠️ <strong>¡Error!</strong> No se pudo guardar la información.`;
         console.error(err);
       } finally {
-        feedback.style.display = 'block';
+        if (feedback) feedback.style.display = 'block';
         // Reset del formulario
         form.reset();
         uploadedPhotoBase64 = '';
         if (previewContainer) previewContainer.style.display = 'none';
         // Reactivar botón
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitBtn) submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
         // Actualizar UI
         renderCards();
         document.getElementById('directory-cards-container').scrollIntoView({ behavior: 'smooth' });
@@ -338,6 +343,11 @@ function initRegisterForm() {
 
   }
 }
+
+// Map functionality removed
+
+
+
 
 /**
  * Persiste el listado de científicas en Firebase Realtime Database y retorna una promesa.
@@ -356,35 +366,52 @@ function persistScientistsToFirebase(scientists) {
     });
 }
 
-// Upload base64 image to Imgur and return the image URL
-async function uploadToImgur(base64Data) {
-  if (!IMGUR_CLIENT_ID) {
-    console.warn('⚠️ IMGUR_CLIENT_ID not set. Skipping image upload.');
-    return '';
-  }
-  try {
-    const response = await fetch('https://api.imgur.com/3/image', {
-      method: 'POST',
-      headers: {
-        Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
-        Accept: 'application/json'
-      },
-      body: new URLSearchParams({ image: base64Data.split(',')[1] }) // remove data URL prefix
-    });
-    const result = await response.json();
-    if (result.success && result.data && result.data.link) {
-      console.info('✅ Image uploaded to Imgur:', result.data.link);
-      return result.data.link;
-    } else {
-      console.warn('⚠️ Imgur upload failed:', result);
+  async function uploadToFirebase(base64Data) {
+    console.log('Attempting to upload image to Firebase Storage');
+    console.log('Base64 data preview:', base64Data.substring(0,30), '...');
+    try {
+      const storage = getStorage();
+      const fileName = `scientist_${Date.now()}`;
+      const imgRef = storageRef(storage, `images/cientificas/${fileName}`);
+      // uploadString with 'data_url' preserves the data URL header
+      await uploadString(imgRef, base64Data, 'data_url');
+      const downloadURL = await getDownloadURL(imgRef);
+      console.info('✅ Image uploaded to Firebase Storage:', downloadURL);
+      return downloadURL;
+    } catch (err) {
+      console.error('❌ Error uploading image to Firebase Storage:', err);
       return '';
     }
-  } catch (err) {
-    console.error('❌ Error uploading image to Imgur:', err);
+  }
+
+
+
+async function uploadImageToRepo(base64Data) {
+  try {
+    const fileName = `scientist_${Date.now()}.png`;
+    const baseUrl = window.location.origin;
+    const resp = await fetch(`${baseUrl}/.netlify/functions/upload-image`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageBase64: base64Data, fileName })
+    });
+    console.log('Upload response status:', resp.status);
+    if (!resp.ok) {
+      const err = await resp.text();
+      console.error('❌ GitHub upload failed:', err);
+      return '';
+    }
+    const data = await resp.json();
+    if (!data.url) {
+      console.warn('⚠️ No URL returned from upload-image function');
+      return '';
+    }
+    return data.url;
+  } catch (e) {
+    console.error('❌ Error uploading image to GitHub via Netlify:', e);
     return '';
   }
 }
-
 
 
 /* ==========================================================================
