@@ -189,7 +189,7 @@ function renderCards() {
     }
 
     const avatarHtml = `
-      <div class="card-avatar-photo">
+      <div class="card-avatar-photo" style="flex-shrink: 0;">
         <img 
           src="${fotoSrc}" 
           alt="${escapeHTML(item.nombre || 'Científica')}" 
@@ -217,17 +217,19 @@ function renderCards() {
 
     return `
       <article class="scientist-card-simple glass-panel">
-        <div class="card-simple-header">
+        <div class="card-simple-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
           ${avatarHtml}
-          <div class="card-title-group">
-            <h3 class="scientist-card-name">${escapeHTML(item.nombre)}</h3>
-            <p class="scientist-card-degree">${escapeHTML(item.titulo || '')}</p>
-            <p class="scientist-card-role">${escapeHTML(item.profesion || '')}</p>
+          <div class="card-title-group" style="flex: 1; margin-left: 8px; display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+            <h3 class="scientist-card-name" style="margin: 0 0 4px 0; font-size: 1.25rem;">${escapeHTML(item.nombre)}</h3>
+            <p class="scientist-card-degree" style="margin: 0 0 3px 0; font-size: 0.95rem; opacity: 0.9;">${escapeHTML(item.titulo || '')}</p>
+            <p class="scientist-card-role" style="margin: 0; font-size: 0.88rem; opacity: 0.8;">${escapeHTML(item.profesion || '')}</p>
           </div>
-          <p class="scientist-card-location" style="text-align: center; font-size: 0.85rem; line-height: 1.3; margin: 4px 0 0 0;">
-            <span style="display: block; font-size: 1rem; margin-bottom: 2px;">📍</span>
-            <span style="display: block; opacity: 0.9;">${escapeHTML(item.pais || 'Desconocida')}</span>
-          </p>
+          <div class="card-location-wrapper" style="margin-left: auto; min-width: 95px; text-align: center; padding-left: 12px; border-left: 1px solid rgba(255, 255, 255, 0.12); flex-shrink: 0;">
+            <p class="scientist-card-location" style="margin: 0; font-size: 0.82rem; line-height: 1.35;">
+              <span style="display: block; font-size: 1.15rem; margin-bottom: 3px;">📍</span>
+              <span style="display: block; opacity: 0.95; font-weight: 500;">${escapeHTML(item.pais || 'Desconocida')}</span>
+            </p>
+          </div>
         </div>
 
         <div class="card-institution-row">
