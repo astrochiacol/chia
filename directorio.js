@@ -308,12 +308,12 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, upload it to the GitHub repo
+        // If a photo was selected, upload it to Firebase Storage
         if (uploadedPhotoBase64) {
-          console.log('Uploading photo to GitHub repo...');
-          const repoUrl = await uploadImageToRepo(uploadedPhotoBase64);
-          console.log('GitHub image URL:', repoUrl);
-          newScientist.foto = repoUrl;
+          console.log('Uploading photo base64 length:', uploadedPhotoBase64.length);
+          const firebaseUrl = await uploadToFirebase(uploadedPhotoBase64);
+          console.log('Firebase image URL:', firebaseUrl);
+          newScientist.foto = firebaseUrl;
         }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
