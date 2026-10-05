@@ -1017,6 +1017,13 @@ body {
   flex-grow: 1;
 }
 
+ .scientist-card-location {
+    text-align: center;
+    width: 100%;
+    margin-top: 8px;   /* opcional: espacio extra */
+ }
+
+
 .card-actions {
   display: flex;
   align-items: center;
