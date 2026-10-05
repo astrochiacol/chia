@@ -8,7 +8,7 @@ export async function handler(event, context) {
   try {
     const { scientists } = JSON.parse(event.body || "{}");
     if (!Array.isArray(scientists)) {
-      return { statusCode: 400, body: "Invalid payload: 'scientists' must be an array" };
+      return { statusCode: 400, headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" }, body: JSON.stringify({ error: "Invalid payload: 'scientists' must be an array" }) };
     }
 
     const payload = {
