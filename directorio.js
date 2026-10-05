@@ -239,13 +239,13 @@ function renderCards() {
    3. Manejo del Formulario de Registro
    ========================================================================== */
 function initRegisterForm() {
-  const form = document.getElementById('scientist-register-form');
+  const form = document.getElementById('chia-register-form');
   const fileInput = document.getElementById('form-foto-file');
   const previewContainer = document.getElementById('photo-preview-container');
   const previewImg = document.getElementById('photo-preview-img');
-  const feedback = document.getElementById('register-feedback');
-  const submitBtn = document.getElementById('btn-submit-register');
-
+  const feedback = document.getElementById('form-feedback');
+  const submitBtn = document.getElementById('form-submit-btn');
+    
   // Previsualización de foto (opcional)
   if (fileInput) {
     fileInput.addEventListener('change', (e) => {
