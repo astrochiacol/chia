@@ -10,10 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initYear();
 });
 
-// Clave de almacenamiento local para persistencia en navegador
-const STORAGE_KEY = 'astrochia_directorio_v2';
-// Limpiar caché vieja de prueba si existiera
-try { localStorage.removeItem('astrochia_cientificas_data'); } catch(e) {}
+
 
 let allScientists = [];
 let currentCategory = 'all';
@@ -48,18 +45,7 @@ async function initDirectory() {
     // El bloque posterior cargará datos desde localStorage si está disponible
   }
 
-  // 2. Si se han registrado nuevas investigadoras desde este navegador, cargarlas
-  const savedData = localStorage.getItem(STORAGE_KEY);
-  if (savedData) {
-    try {
-      const localList = JSON.parse(savedData);
-      if (Array.isArray(localList)) {
-        allScientists = localList;
-      }
-    } catch (e) {
-      console.warn('Error leyendo localStorage');
-    }
-  }
+
 
   // Render inicial
   renderCards();
@@ -302,12 +288,7 @@ function initRegisterForm() {
       // Agregar al inicio del arreglo
       allScientists.unshift(newScientist);
 
-      // Guardar en localStorage para que persista
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(allScientists));
-      } catch (err) {
-        console.warn('LocalStorage lleno o no disponible');
-      }
+
       // Enviar datos al workflow de GitHub para actualizar cientificas.json
       persistScientistsToGitHub(allScientists);
 
@@ -350,20 +331,20 @@ async function persistScientistsToGitHub(scientists) {
     client_payload: { scientists }
   };
   try {
-    const resp = await fetch(url, {
+    // Enviar datos a la función serverless que usa el secret GTHUB_TOKEN
+    const resp = await fetch('/.netlify/functions/save-directory', {
       method: 'POST',
       headers: {
-        'Authorization': `token ${GTHUB_TOKEN}`,
-        'Accept': 'application/vnd.github.everest-preview+json',
+        'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ scientists })
     });
     if (!resp.ok) {
       const errText = await resp.text();
-      console.warn('⚠️ GitHub dispatch falló:', resp.status, errText);
+      console.warn('⚠️ Error al guardar en GitHub vía función serverless:', resp.status, errText);
     } else {
-      console.info('✅ Dispatch a GitHub Actions enviado');
+      console.info('✅ Datos enviados a la función serverless y commit disparado');
     }
   } catch (e) {
     console.error('❌ Error enviando dispatch:', e);
