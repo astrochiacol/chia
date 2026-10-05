@@ -217,7 +217,7 @@ function renderCards() {
             <p class="scientist-card-degree">${escapeHTML(item.titulo || '')}</p>
             <p class="scientist-card-role">${escapeHTML(item.profesion || '')}</p>
           </div>
-          <p class="scientist-card-location">📍 ${escapeHTML(item.pais || 'Desconocida')}</p>
+          <p class="scientist-card-location"> Ubicación: ${escapeHTML(item.pais || 'Desconocida')}</p>
         </div>
 
         <div class="card-institution-row">
@@ -243,8 +243,8 @@ function initRegisterForm() {
   const fileInput = document.getElementById('form-foto-file');
   const previewContainer = document.getElementById('photo-preview-container');
   const previewImg = document.getElementById('photo-preview-img');
-  const feedback = document.getElementById('form-feedback');
-  const submitBtn = document.getElementById('form-submit-btn');
+  const feedback = document.getElementById('register-feedback');
+  const submitBtn = document.getElementById('btn-submit-register');
     
   // Previsualización de foto (opcional)
   if (fileInput) {
@@ -262,7 +262,8 @@ function initRegisterForm() {
         reader.readAsDataURL(file);
       } else {
         uploadedPhotoBase64 = '';
-        if (previewContainer) previewContainer.style.display = 'none'; // Envío del formulario
+        if (previewContainer) previewContainer.style.display = 'none';
+        if (previewImg) previewImg.src = '';
     }
   });
   }
@@ -324,14 +325,14 @@ function initRegisterForm() {
         feedback.innerHTML = `⚠️ <strong>¡Error!</strong> No se pudo guardar la información.`;
         console.error(err);
       } finally {
-        feedback.style.display = 'block';
+        if (feedback) feedback.style.display = 'block';
         // Reset del formulario
         form.reset();
         uploadedPhotoBase64 = '';
         if (previewContainer) previewContainer.style.display = 'none';
         // Reactivar botón
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+        if (submitBtn) submitBtn.disabled = false;
+        if (submitBtn) submitBtn.innerHTML = '<span>Guardar y Agregar al Directorio</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
         // Actualizar UI
         renderCards();
         document.getElementById('directory-cards-container').scrollIntoView({ behavior: 'smooth' });
