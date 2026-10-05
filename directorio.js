@@ -270,7 +270,9 @@ function initRegisterForm() {
       e.preventDefault();
 
       const nombre = document.getElementById('form-nombre').value.trim();
-      const titulo = document.getElementById('form-titulo').value.trim();
+        const tituloPrefix = document.getElementById('form-titulo-prefix').value;
+        const tituloSuffix = document.getElementById('form-titulo-suffix').value.trim();
+        const titulo = tituloPrefix ? (tituloPrefix + (tituloSuffix ? ' ' + tituloSuffix : '')) : tituloSuffix;
       const profesion = document.getElementById('form-profesion').value.trim();
       const institucion = document.getElementById('form-institucion').value.trim();
       const areasRaw = document.getElementById('form-areas').value.trim();

@@ -157,7 +157,15 @@
               </div>
               <div class="form-group">
                 <label for="form-titulo">Título Académico *</label>
-                <input type="text" id="form-titulo" required placeholder="Ej. PhD en Astrofísica / MSc en Física / Estudiante de Pregrado">
+                                <div class="form-titulo-group">
+                  <select id="form-titulo-prefix" required>
+                    <option value="" disabled selected>Tipo de título</option>
+                    <option>PhD</option>
+                    <option>MSc</option>
+                    <option>Estudiante</option>
+                  </select>
+                  <input type="text" id="form-titulo-suffix" placeholder="Ej. en Astrofísica / de Física / de Pregrado">
+                </div>
               </div>
             </div>
 
