@@ -217,6 +217,7 @@ function renderCards() {
             <p class="scientist-card-degree">${escapeHTML(item.titulo || '')}</p>
             <p class="scientist-card-role">${escapeHTML(item.profesion || '')}</p>
           </div>
+          <p class="scientist-card-location">Ubicación: ${escapeHTML(item.pais || '')}</p>
         </div>
 
         <div class="card-institution-row">
