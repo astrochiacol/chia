@@ -3,9 +3,26 @@
 // that updates cientificas.json via the existing GitHub Actions workflow.
 
 exports.handler = async (event, context) => {
+  // CORS preflight handling
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      },
+      body: ''
+    };
+  }
+
   // Only accept POST requests
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return {
+      statusCode: 405,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: 'Method Not Allowed'
+    };
   }
 
   try {
@@ -26,20 +43,34 @@ exports.handler = async (event, context) => {
         Authorization: `token ${token}`,
         Accept: 'application/vnd.github.everest-preview+json',
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify({
         event_type: 'save_scientists',
-        client_payload: { scientists },
-      }),
+        client_payload: { scientists }
+      })
     });
 
     if (!resp.ok) {
       const txt = await resp.text();
-      return { statusCode: resp.status, body: `GitHub error: ${txt}` };
+      return {
+        statusCode: resp.status,
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: `GitHub error: ${txt}`
+      };
     }
-    return { statusCode: 200, body: '✅ dispatched' };
+    return {
+      statusCode: 200,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: '✅ dispatched'
+    };
   } catch (e) {
     console.error(e);
-    return { statusCode: 500, body: e.message };
+    return {
+      statusCode: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: e.message
+    };
   }
 };
+
