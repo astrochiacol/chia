@@ -308,10 +308,10 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, upload it to the GitHub repository first
+        // If a photo was selected, upload it to Firebase Storage
         if (uploadedPhotoBase64) {
-          const githubUrl = await uploadImageToRepo(uploadedPhotoBase64);
-          newScientist.foto = githubUrl;
+          const firebaseUrl = await uploadToFirebase(uploadedPhotoBase64);
+          newScientist.foto = firebaseUrl;
         }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
@@ -416,18 +416,24 @@ async function uploadToFirebase(base64Data) {
 async function uploadImageToRepo(base64Data) {
   try {
     const fileName = `scientist_${Date.now()}.png`;
-    const resp = await fetch('/.netlify/functions/upload-image', {
+    const baseUrl = window.location.origin;
+    const resp = await fetch(`${baseUrl}/.netlify/functions/upload-image`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ imageBase64: base64Data, fileName })
     });
+    console.log('Upload response status:', resp.status);
     if (!resp.ok) {
       const err = await resp.text();
       console.error('❌ GitHub upload failed:', err);
       return '';
     }
     const data = await resp.json();
-    return data.url || '';
+    if (!data.url) {
+      console.warn('⚠️ No URL returned from upload-image function');
+      return '';
+    }
+    return data.url;
   } catch (e) {
     console.error('❌ Error uploading image to GitHub via Netlify:', e);
     return '';
