@@ -13,8 +13,8 @@ exports.handler = async (event, context) => {
     if (!Array.isArray(scientists)) throw new Error('Payload must contain an array');
 
     // Token is provided as an environment variable in the deployment platform
-    const token = process.env.GITHUB_TOKEN;
-    if (!token) throw new Error('GITHUB_TOKEN not defined in environment');
+    const token = process.env.GTHUB_TOKEN;
+    if (!token) throw new Error('GTHUB_TOKEN not defined in environment');
 
     const owner = 'astrochiacol';
     const repo = 'chia';
