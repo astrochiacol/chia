@@ -33,7 +33,7 @@ async function initDirectory() {
   const dbRef = ref(db, 'scientists');
   onValue(dbRef, (snap) => {
     const data = snap.val();
-    allScientists = data ? data : [];
+    allScientists = data ? Object.values(data) : [];
     renderCards();
     showNotification('Datos cargados');
   }, (error) => {
