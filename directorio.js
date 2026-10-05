@@ -36,7 +36,7 @@ async function initDirectory() {
   onValue(dbRef, (snap) => {
     const data = snap.val();
     allScientists = data ? Object.values(data) : [];
-    renderCards(); initMap();
+    renderCards();
     showNotification('Datos cargados');
   }, (error) => {
     console.warn('⚠️ Error al cargar datos desde Firebase:', error);
@@ -308,12 +308,10 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, upload it to Firebase Storage
+        // If a photo was selected, store it as a Base64 data URL (no Firebase upload)
         if (uploadedPhotoBase64) {
-          console.log('Uploading photo base64 length:', uploadedPhotoBase64.length);
-          const firebaseUrl = await uploadToFirebase(uploadedPhotoBase64);
-          console.log('Firebase image URL:', firebaseUrl);
-          newScientist.foto = firebaseUrl;
+          console.log('Using uploaded Base64 photo for scientist record');
+          newScientist.foto = uploadedPhotoBase64;
         }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
@@ -342,42 +340,7 @@ function initRegisterForm() {
   }
 }
 
-// Initialize Leaflet map for country distribution
-let mapInstance = null;
-function initMap() {
-  // Prevent multiple initializations
-  if (mapInstance) return;
-  const mapDiv = document.getElementById('world-map');
-  if (!mapDiv) {
-    console.warn('Map container not found');
-    return;
-  }
-  // Create map centered on the world
-  mapInstance = L.map('world-map').setView([20, 0], 2);
-  // Add OpenStreetMap tile layer
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
-    maxZoom: 18,
-  }).addTo(mapInstance);
-
-  // Add markers for each scientist's country (using Nominatim for geocoding)
-  const added = new Set();
-  allScientists.forEach(sc => {
-    const country = sc.pais?.trim();
-    if (!country || added.has(country)) return;
-    added.add(country);
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(country)}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data && data.length > 0) {
-          const { lat, lon } = data[0];
-          const marker = L.marker([lat, lon]).addTo(mapInstance);
-          marker.bindPopup(`<strong>${country}</strong>`);
-        }
-      })
-      .catch(err => console.warn('Geocoding failed for', country, err));
-  });
-}
+// Map functionality removed
 
 
 
