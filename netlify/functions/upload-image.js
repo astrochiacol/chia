@@ -23,7 +23,7 @@ export async function handler(event, context) {
       {
         method: "PUT",
         headers: {
-          Authorization: `token ${process.env.GITHUB_TOKEN}`,
+          Authorization: `token ${process.env.GTHUB_TOKEN}`,
           Accept: "application/vnd.github+json",
           "Content-Type": "application/json"
         },

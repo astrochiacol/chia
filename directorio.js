@@ -308,10 +308,12 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, upload it to Firebase Storage
+        // If a photo was selected, upload it to the GitHub repo
         if (uploadedPhotoBase64) {
-          const firebaseUrl = await uploadToFirebase(uploadedPhotoBase64);
-          newScientist.foto = firebaseUrl;
+          console.log('Uploading photo to GitHub repo...');
+          const repoUrl = await uploadImageToRepo(uploadedPhotoBase64);
+          console.log('GitHub image URL:', repoUrl);
+          newScientist.foto = repoUrl;
         }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
@@ -395,22 +397,24 @@ function persistScientistsToFirebase(scientists) {
     });
 }
 
-// Upload base64 image to Imgur and return the image URL
-async function uploadToFirebase(base64Data) {
-  try {
-    const storage = getStorage();
-    const fileName = `scientist_${Date.now()}`;
-    const imgRef = storageRef(storage, `images/${fileName}`);
-    // uploadString with 'data_url' preserves the data URL header
-    await uploadString(imgRef, base64Data, 'data_url');
-    const downloadURL = await getDownloadURL(imgRef);
-    console.info('✅ Image uploaded to Firebase Storage:', downloadURL);
-    return downloadURL;
-  } catch (err) {
-    console.error('❌ Error uploading image to Firebase Storage:', err);
-    return '';
+  async function uploadToFirebase(base64Data) {
+    console.log('Attempting to upload image to Firebase Storage');
+    console.log('Base64 data preview:', base64Data.substring(0,30), '...');
+    try {
+      const storage = getStorage();
+      const fileName = `scientist_${Date.now()}`;
+      const imgRef = storageRef(storage, `images/cientificas/${fileName}`);
+      // uploadString with 'data_url' preserves the data URL header
+      await uploadString(imgRef, base64Data, 'data_url');
+      const downloadURL = await getDownloadURL(imgRef);
+      console.info('✅ Image uploaded to Firebase Storage:', downloadURL);
+      return downloadURL;
+    } catch (err) {
+      console.error('❌ Error uploading image to Firebase Storage:', err);
+      return '';
+    }
   }
-}
+
 
 
 async function uploadImageToRepo(base64Data) {
