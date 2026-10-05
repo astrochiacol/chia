@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 let allScientists = [];
 let currentCategory = 'all';
 let currentSearchTerm = '';
-let uploadedPhotoBase64 = '';
+
 
 /* ==========================================================================
    1. Carga y Gestión del Directorio
@@ -240,33 +240,13 @@ function renderCards() {
    ========================================================================== */
 function initRegisterForm() {
   const form = document.getElementById('scientist-register-form');
-  const fileInput = document.getElementById('form-foto-file');
-  const previewContainer = document.getElementById('photo-preview-container');
-  const previewImg = document.getElementById('photo-preview-img');
+
   const feedback = document.getElementById('register-feedback');
   const submitBtn = document.getElementById('btn-submit-register');
     
   // Previsualización de foto (opcional)
-  if (fileInput) {
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          uploadedPhotoBase64 = event.target.result;
-          if (previewImg && previewContainer) {
-            previewImg.src = uploadedPhotoBase64;
-            previewContainer.style.display = 'flex';
-          }
-        };
-        reader.readAsDataURL(file);
-      } else {
-        uploadedPhotoBase64 = '';
-        if (previewContainer) previewContainer.style.display = 'none';
-        if (previewImg) previewImg.src = '';
-    }
-  });
-  }
+  
+
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -309,14 +289,7 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
-        // If a photo was selected, upload it to Firebase Storage and store the download URL
-        if (uploadedPhotoBase64) {
-          console.log('Uploading photo to Firebase Storage');
-          const photoURL = await uploadToFirebase(uploadedPhotoBase64);
-          if (photoURL) {
-            newScientist.foto = photoURL;
-          }
-        }
+
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
         feedback.innerHTML = `✨ <strong>¡Registro exitoso!</strong> Tu tarjeta ha sido creada y agregada al directorio de científicas.`;
