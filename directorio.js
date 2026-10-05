@@ -224,7 +224,10 @@ function renderCards() {
             <p class="scientist-card-degree">${escapeHTML(item.titulo || '')}</p>
             <p class="scientist-card-role">${escapeHTML(item.profesion || '')}</p>
           </div>
-          <p class="scientist-card-location">Ubicación: ${escapeHTML(item.pais || 'Desconocida')}</p>
+          <p class="scientist-card-location" style="text-align: center; font-size: 0.85rem; line-height: 1.3; margin: 4px 0 0 0;">
+            <span style="display: block; font-size: 1rem; margin-bottom: 2px;">📍</span>
+            <span style="display: block; opacity: 0.9;">${escapeHTML(item.pais || 'Desconocida')}</span>
+          </p>
         </div>
 
         <div class="card-institution-row">
