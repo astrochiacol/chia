@@ -381,6 +381,15 @@ function persistScientistsToFirebase(scientists) {
       return '';
     }
   }
+// Load existing scientists from Firebase on page load
+const scientistsRef = ref(db, 'scientists');
+onValue(scientistsRef, (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    allScientists = Array.isArray(data) ? data : Object.values(data);
+    renderCards();
+  }
+});
 
 
 
