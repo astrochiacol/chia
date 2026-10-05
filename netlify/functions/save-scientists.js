@@ -33,7 +33,7 @@ export async function handler(event, context) {
       const errText = await resp.text();
       return { statusCode: resp.status, body: errText };
     }
-    return { statusCode: 200, body: "OK" };
+    return { statusCode: 200, headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" }, body: JSON.stringify({ message: "OK" }) };
   } catch (e) {
     console.error("Serverless function error:", e);
     return { statusCode: 500, body: e.message };
