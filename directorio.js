@@ -36,7 +36,7 @@ async function initDirectory() {
   onValue(dbRef, (snap) => {
     const data = snap.val();
     allScientists = data ? Object.values(data) : [];
-    renderCards();
+    renderCards(); initMap();
     showNotification('Datos cargados');
   }, (error) => {
     console.warn('⚠️ Error al cargar datos desde Firebase:', error);
