@@ -3,6 +3,8 @@
  * Carga de datos • Búsqueda en tiempo real • Filtros • Registro dinámico • Exportación a Excel/CSV
  */
 import { db, ref, onValue, set, push } from "./firebase-config.js";
+import { IMGUR_CLIENT_ID } from "./imgur-config.js";
+
 
 document.addEventListener('DOMContentLoaded', () => {
   initStarfield();
@@ -288,7 +290,7 @@ function initRegisterForm() {
         areas: areasArray,
         correo,
         redes,
-        foto: uploadedPhotoBase64 || ''
+        foto: '' // will be set after Imgur upload if applicable
       };
 
       // Agregar al inicio del arreglo
@@ -299,6 +301,11 @@ function initRegisterForm() {
       submitBtn.innerHTML = '<span>Guardando registro...</span>';
 
       try {
+        // If a photo was selected, upload it to Imgur first
+        if (uploadedPhotoBase64) {
+          const imgurUrl = await uploadToImgur(uploadedPhotoBase64);
+          newScientist.foto = imgurUrl;
+        }
         await persistScientistsToFirebase(allScientists);
         feedback.className = 'form-feedback success';
         feedback.innerHTML = `✨ <strong>¡Registro exitoso!</strong> Tu tarjeta ha sido creada y agregada al directorio de científicas.`;
@@ -340,6 +347,36 @@ function persistScientistsToFirebase(scientists) {
       throw e;
     });
 }
+
+// Upload base64 image to Imgur and return the image URL
+async function uploadToImgur(base64Data) {
+  if (!IMGUR_CLIENT_ID) {
+    console.warn('⚠️ IMGUR_CLIENT_ID not set. Skipping image upload.');
+    return '';
+  }
+  try {
+    const response = await fetch('https://api.imgur.com/3/image', {
+      method: 'POST',
+      headers: {
+        Authorization: `Client-ID ${IMGUR_CLIENT_ID}`,
+        Accept: 'application/json'
+      },
+      body: new URLSearchParams({ image: base64Data.split(',')[1] }) // remove data URL prefix
+    });
+    const result = await response.json();
+    if (result.success && result.data && result.data.link) {
+      console.info('✅ Image uploaded to Imgur:', result.data.link);
+      return result.data.link;
+    } else {
+      console.warn('⚠️ Imgur upload failed:', result);
+      return '';
+    }
+  } catch (err) {
+    console.error('❌ Error uploading image to Imgur:', err);
+    return '';
+  }
+}
+
 
 
 /* ==========================================================================
