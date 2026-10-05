@@ -343,7 +343,9 @@ function initRegisterForm() {
  * Persiste el listado de científicas en Firebase Realtime Database y retorna una promesa.
  */
 function persistScientistsToFirebase(scientists) {
-  const dbRef = ref(db, 'scientists');
+  // Ensure we write to the correct path and log the payload for debugging
+  console.debug('Persisting scientists to Firebase:', scientists);
+  const dbRef = ref(db, '/scientists');
   return set(dbRef, scientists)
     .then(() => {
       console.info('✅ Científicas guardadas en Firebase Realtime Database');
