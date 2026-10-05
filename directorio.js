@@ -487,7 +487,9 @@ function showEmail(button) {
   }
 }
 
+function escapeHTML(str) {
   if (!str) return '';
+
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
