@@ -1445,8 +1445,8 @@ body {
   .celestial-body.moon-glow {
     width: 140px;
     height: 140px;
-    background-image: url('https://raw.githubusercontent.com/astrochiacol/astrochias/main/images/logoCHIA_.png');
-    background-size: cover;
+    background-image: url('images/logoopaco2.png');
+    background-size: contain;
     background-position: center;
     border-radius: 50%;
   }
