@@ -312,16 +312,18 @@ function initRegisterForm() {
 }
 
 /**
- * Persiste el listado de científicas en Firebase Realtime Database
+ * Persiste el listado de científicas en Firebase Realtime Database y retorna una promesa.
  */
-async function persistScientistsToFirebase(scientists) {
-  try {
-    const dbRef = ref(db, 'scientists');
-    await set(dbRef, scientists);
-    console.info('✅ Científicas guardadas en Firebase Realtime Database');
-  } catch (e) {
-    console.error('❌ Error guardando científicas en Firebase:', e);
-  }
+function persistScientistsToFirebase(scientists) {
+  const dbRef = ref(db, 'scientists');
+  return set(dbRef, scientists)
+    .then(() => {
+      console.info('✅ Científicas guardadas en Firebase Realtime Database');
+    })
+    .catch((e) => {
+      console.error('❌ Error guardando científicas en Firebase:', e);
+      throw e;
+    });
 }
 
 
